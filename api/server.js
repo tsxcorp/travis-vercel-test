@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const puppeteer = require('puppeteer'); // Sử dụng Puppeteer để tạo PDF
+const puppeteer = require('puppeteer');
 const fs = require('fs');
 const path = require('path');
 const app = express();
@@ -40,10 +40,10 @@ app.post('/generate-pdf', async (req, res) => {
             .replace('{{headerUrl}}', headerUrl)
             .replace('{{footerUrl}}', footerUrl);
 
-        // Khởi chạy Puppeteer với cấu hình để hoạt động trên môi trường Vercel
+        // Khởi chạy Puppeteer
         const browser = await puppeteer.launch({
-            headless: 'new',  // Sử dụng chế độ headless mới nếu cần
-            args: ['--no-sandbox', '--disable-setuid-sandbox'] // Không cần chỉ định executablePath
+            args: ['--no-sandbox', '--disable-setuid-sandbox'], // Thiết lập các tùy chọn an toàn cho môi trường đám mây
+            headless: 'new' // Đảm bảo sử dụng phiên bản headless mới
         });
 
         const page = await browser.newPage();

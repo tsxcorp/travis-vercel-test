@@ -11,7 +11,8 @@
     { "src": "/print-badge", "dest": "api/server.js" },
     { "src": "/", "dest": "api/server.js" }
   ],
+  "installCommand": "npm install && npx puppeteer install",
   "env": {
-    "CHROME_PATH": "/usr/bin/chromium-browser"
+    "PUPPETEER_EXECUTABLE_PATH": "./node_modules/puppeteer/.local-chromium"
   }
 }
