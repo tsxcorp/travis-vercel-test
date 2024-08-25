@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "main": "api/server.js",
   "scripts": {
+    "start": "node api/server.js",
+    "install": "npx puppeteer install", // Thêm lệnh này để cài đặt Chromium
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

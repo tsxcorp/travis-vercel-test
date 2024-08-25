@@ -40,10 +40,9 @@ app.post('/generate-pdf', async (req, res) => {
             .replace('{{headerUrl}}', headerUrl)
             .replace('{{footerUrl}}', footerUrl);
 
-        // Khởi chạy Puppeteer
+        // Khởi chạy Puppeteer mà không chỉ định executablePath
         const browser = await puppeteer.launch({
-            args: ['--no-sandbox', '--disable-setuid-sandbox'], // Thiết lập các tùy chọn an toàn cho môi trường đám mây
-            headless: 'new' // Đảm bảo sử dụng phiên bản headless mới
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
         });
 
         const page = await browser.newPage();
