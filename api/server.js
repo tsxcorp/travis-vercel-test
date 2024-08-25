@@ -124,11 +124,15 @@ app.post('/generate-pdf', async (req, res) => {
   }
 });
 
-// Thêm endpoint mới cho in thẻ đeo
+// Xử lý yêu cầu GET đến /print-badge
 app.get('/print-badge', (req, res) => {
   const name = req.query.name || 'Tên Mặc Định';
   const company = req.query.company || 'Công ty Mặc Định';
-  const qrCodeUrl = req.query.qrCodeUrl || 'https://via.placeholder.com/150';  // Sử dụng trực tiếp URL của hình ảnh QR code
+  const encryptKey = req.query.encryptKey || 'Mặc Định';
+
+  // Encode encryptKey để dùng làm URL cho QR code
+  const encodedEncryptKey = encodeURIComponent(encryptKey);
+  const qrCodeUrl = `https://port.rx-vietnamshows.com/qr-code?data=${encodedEncryptKey}&size=215`;
 
   // Đọc nội dung từ file HTML
   fs.readFile(path.join(__dirname, 'badge.html'), 'utf8', (err, data) => {
@@ -141,7 +145,7 @@ app.get('/print-badge', (req, res) => {
       // Thay thế placeholders bằng dữ liệu thực tế
       let htmlContent = data.replace('{{name}}', name)
                             .replace('{{company}}', company)
-                            .replace('{{qrCodeUrl}}', qrCodeUrl);  // Sử dụng URL QR code trực tiếp
+                            .replace('{{qrCodeUrl}}', qrCodeUrl); // Sử dụng URL QR code với encryptKey đã mã hóa
 
       res.send(htmlContent);
   });
@@ -151,6 +155,6 @@ app.get('/print-badge', (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-});
+}); 
 
 module.exports = app;
