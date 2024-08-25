@@ -131,7 +131,7 @@ app.get('/print-badge', (req, res) => {
   const encryptKey = req.query.encryptKey || 'Mặc Định';
 
   // Encode encryptKey để dùng làm URL cho QR code
-  const encodedEncryptKey = encodeURIComponent(encryptKey);
+  const encodedEncryptKey = encodeURIComponent(encryptKey); // Đảm bảo mã hóa ký tự đặc biệt
   const qrCodeUrl = `https://port.rx-vietnamshows.com/qr-code?data=${encodedEncryptKey}&size=215`;
 
   // Đọc nội dung từ file HTML
