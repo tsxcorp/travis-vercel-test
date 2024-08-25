@@ -50,20 +50,20 @@ app.post('/generate-pdf', async (req, res) => {
     doc.moveDown(4); // Di chuyển xuống dưới để tạo khoảng trống sau header
 
     // Thêm nội dung vào PDF
-    doc.fontSize(38).text(name, {
+    doc.fontSize(32).text(name, {
       align: 'center',
       lineGap: 10,
     });
-    doc.moveDown(0.5); // Khoảng cách giữa tên và công ty
+    // doc.moveDown(0.5); // Khoảng cách giữa tên và công ty
     doc.fontSize(16).text(company, {
       align: 'center',
       lineGap: 10,
     });
-    doc.moveDown(2); // Khoảng cách giữa văn bản và QR code
+    // doc.moveDown(2); // Khoảng cách giữa văn bản và QR code
 
     // Thêm hình ảnh QR code vào PDF từ buffer
     doc.image(qrImageBuffer, {
-      fit: [100, 100],
+      fit: [215, 215],
       align: 'center',
       valign: 'center',
       x: (doc.page.width - 100) / 2, // Căn giữa QR code theo chiều ngang
