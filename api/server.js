@@ -40,6 +40,10 @@ app.post('/generate-pdf', async (req, res) => {
       res.json({ base64: base64data });
     });
 
+    // Đăng ký font Poppins
+    doc.registerFont('Poppins', 'fonts/Poppins-Regular.ttf');
+    doc.registerFont('Poppins-Bold', 'fonts/Poppins-Bold.ttf');
+
     // Thêm hình ảnh header
     doc.image(headerImageBuffer, 0, 0, {
       width: doc.page.width, // Chiều rộng bằng chiều rộng trang
@@ -49,17 +53,17 @@ app.post('/generate-pdf', async (req, res) => {
     // Thêm khoảng trống sau header để nội dung không chồng lên nhau
     doc.moveDown(4); // Di chuyển xuống dưới để tạo khoảng trống sau header
 
-    // Thêm nội dung vào PDF
+    // Thêm nội dung vào PDF với font Poppins
+    doc.font('Poppins-Medium'); // Sử dụng font Poppins-Bold cho tên
     doc.fontSize(38).text(name, {
       align: 'center',
       lineGap: 10,
     });
-    // doc.moveDown(0.5); // Khoảng cách giữa tên và công ty
+    doc.font('Poppins'); // Sử dụng font Poppins thông thường cho công ty
     doc.fontSize(16).text(company, {
       align: 'center',
       lineGap: 10,
     });
-    // doc.moveDown(2); // Khoảng cách giữa văn bản và QR code
 
     // Thêm hình ảnh QR code vào PDF từ buffer
     doc.image(qrImageBuffer, {
