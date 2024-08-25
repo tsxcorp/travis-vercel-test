@@ -1,6 +1,5 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const puppeteer = require('puppeteer');
 const fs = require('fs');
 const path = require('path');
 const app = express();
@@ -9,55 +8,7 @@ app.use(bodyParser.json());
 
 // Xử lý yêu cầu đến root URL
 app.get('/', (req, res) => {
-    res.send('API is running. Use POST /generate-pdf to generate a PDF or GET /print-badge to print a badge.');
-});
-
-// Xử lý yêu cầu POST đến /generate-pdf
-app.post('/generate-pdf', async (req, res) => {
-    try {
-        let { type, name, company, qrCodeUrl, qrCodeUrlGroup, headerUrl, footerUrl } = req.body;
-
-        // Thiết lập giá trị mặc định nếu tham số trống hoặc null
-        type = type || 'ind';
-        name = name || 'VISITOR';
-        company = company || 'No Company Provided';
-        qrCodeUrl = qrCodeUrl || 'https://via.placeholder.com/150';
-        qrCodeUrlGroup = qrCodeUrlGroup || 'https://via.placeholder.com/150';
-        headerUrl = headerUrl || 'https://via.placeholder.com/595x60';
-        footerUrl = footerUrl || 'https://via.placeholder.com/595x40';
-
-        let htmlContent;
-        if (type === 'group') {
-            htmlContent = fs.readFileSync(path.join(__dirname, 'template-group.html'), 'utf8');
-            htmlContent = htmlContent.replace('{{qrCodeUrlGroup}}', qrCodeUrlGroup);
-        } else {
-            htmlContent = fs.readFileSync(path.join(__dirname, 'template.html'), 'utf8');
-        }
-
-        htmlContent = htmlContent.replace('{{name}}', name)
-            .replace('{{company}}', company)
-            .replace('{{qrCodeUrl}}', qrCodeUrl)
-            .replace('{{headerUrl}}', headerUrl)
-            .replace('{{footerUrl}}', footerUrl);
-
-        // Khởi chạy Puppeteer mà không chỉ định executablePath
-        const browser = await puppeteer.launch({
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
-        });
-
-        const page = await browser.newPage();
-        await page.setContent(htmlContent, { waitUntil: 'load' });
-        const pdfBuffer = await page.pdf({ format: 'A5', printBackground: true });
-
-        await browser.close();
-
-        const base64data = pdfBuffer.toString('base64');
-        res.json({ base64: base64data });
-
-    } catch (error) {
-        console.error('Error generating PDF:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
+    res.send('API is running. Use GET /print-badge to print a badge or POST /generate-pdf to generate a PDF.');
 });
 
 // Xử lý yêu cầu GET đến /print-badge
@@ -81,6 +32,26 @@ app.get('/print-badge', (req, res) => {
 
         res.send(htmlContent);
     });
+});
+
+// Xử lý yêu cầu POST đến /generate-pdf
+app.post('/generate-pdf', (req, res) => {
+    const { name, company, qrCodeUrl } = req.body;
+
+    // Giả lập việc tạo file PDF (chỉ đơn giản trả về nội dung JSON)
+    if (!name || !company || !qrCodeUrl) {
+        return res.status(400).json({ error: 'Invalid input data' });
+    }
+
+    const pdfContent = {
+        name: name,
+        company: company,
+        qrCodeUrl: qrCodeUrl,
+        message: 'PDF generated successfully!',
+        base64: 'base64-string-of-pdf-content'
+    };
+
+    res.json(pdfContent);
 });
 
 const PORT = process.env.PORT || 3000;
