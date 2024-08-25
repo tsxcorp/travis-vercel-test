@@ -28,11 +28,9 @@ app.post('/generate-pdf', async (req, res) => {
 
         let htmlContent;
         if (type === 'group') {
-            // Sử dụng template khác cho nhóm
             htmlContent = fs.readFileSync(path.join(__dirname, 'template-group.html'), 'utf8');
             htmlContent = htmlContent.replace('{{qrCodeUrlGroup}}', qrCodeUrlGroup);
         } else {
-            // Sử dụng template cho cá nhân
             htmlContent = fs.readFileSync(path.join(__dirname, 'template.html'), 'utf8');
         }
 
@@ -42,7 +40,12 @@ app.post('/generate-pdf', async (req, res) => {
             .replace('{{headerUrl}}', headerUrl)
             .replace('{{footerUrl}}', footerUrl);
 
-        const browser = await puppeteer.launch();
+        // Khởi chạy Puppeteer với cấu hình để hoạt động trên môi trường Vercel
+        const browser = await puppeteer.launch({
+            args: ['--no-sandbox', '--disable-setuid-sandbox'],
+            executablePath: process.env.CHROME_PATH || '/usr/bin/chromium-browser',
+        });
+
         const page = await browser.newPage();
         await page.setContent(htmlContent, { waitUntil: 'load' });
         const pdfBuffer = await page.pdf({ format: 'A5', printBackground: true });

@@ -7,17 +7,11 @@
     }
   ],
   "routes": [
-    {
-      "src": "/generate-pdf",
-      "dest": "api/server.js"
-    },
-    {
-      "src": "/print-badge",
-      "dest": "api/server.js"
-    },
-    {
-      "src": "/",
-      "dest": "api/server.js"
-    }
-  ]
+    { "src": "/generate-pdf", "dest": "api/server.js" },
+    { "src": "/print-badge", "dest": "api/server.js" },
+    { "src": "/", "dest": "api/server.js" }
+  ],
+  "env": {
+    "CHROME_PATH": "/usr/bin/chromium-browser"
+  }
 }
