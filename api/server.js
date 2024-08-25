@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const PDFDocument = require('pdfkit');
-const axios = require('axios'); // Thêm axios để tải hình ảnh từ URL
+const axios = require('axios');
 const app = express();
 
 app.use(bodyParser.json());
@@ -14,11 +14,14 @@ app.get('/', (req, res) => {
 // Xử lý yêu cầu POST đến /generate-pdf
 app.post('/generate-pdf', async (req, res) => {
   try {
-    const { name, company, qrCodeUrl, headerUrl, footerUrl } = req.body;
+    let { name, company, qrCodeUrl, headerUrl, footerUrl } = req.body;
 
-    if (!name || !company || !qrCodeUrl || !headerUrl || !footerUrl) {
-      return res.status(400).json({ error: 'Invalid input data' });
-    }
+    // Thiết lập giá trị mặc định nếu tham số trống hoặc null
+    name = name || 'No Name Provided';
+    company = company || 'No Company Provided';
+    qrCodeUrl = qrCodeUrl || 'https://via.placeholder.com/150'; // Sử dụng hình ảnh mặc định nếu không có URL QR
+    headerUrl = headerUrl || 'https://via.placeholder.com/595x60'; // Sử dụng header mặc định
+    footerUrl = footerUrl || 'https://via.placeholder.com/595x40'; // Sử dụng footer mặc định
 
     // Tải hình ảnh header, footer, và QR code từ URL
     const qrResponse = await axios.get(qrCodeUrl, { responseType: 'arraybuffer' });
@@ -29,8 +32,8 @@ app.post('/generate-pdf', async (req, res) => {
     const headerImageBuffer = Buffer.from(headerResponse.data, 'base64');
     const footerImageBuffer = Buffer.from(footerResponse.data, 'base64');
 
-    // Tạo file PDF với khổ A5
-    const doc = new PDFDocument({ size: 'A5', margin: 50 }); // Thiết lập margin để tránh nội dung quá sát biên
+    // Tạo file PDF với khổ A5 và giảm chất lượng hình ảnh
+    const doc = new PDFDocument({ size: 'A5', margin: 50, compress: true });
     let buffers = [];
 
     doc.on('data', buffers.push.bind(buffers));
@@ -42,28 +45,26 @@ app.post('/generate-pdf', async (req, res) => {
 
     // Đăng ký font Poppins
     const path = require('path');
-
-    // Đăng ký font với đường dẫn tuyệt đối
     doc.registerFont('Poppins', path.join(__dirname, 'fonts/Poppins-Regular.ttf'));
     doc.registerFont('Poppins-Bold', path.join(__dirname, 'fonts/Poppins-Bold.ttf'));
     doc.registerFont('Poppins-Medium', path.join(__dirname, 'fonts/Poppins-Medium.ttf'));
 
     // Thêm hình ảnh header
     doc.image(headerImageBuffer, 0, 0, {
-      width: doc.page.width, // Chiều rộng bằng chiều rộng trang
-      height: 60             // Chiều cao header khoảng 60 pixels
+      width: doc.page.width,
+      height: 60
     });
 
-    // Thêm khoảng trống sau header để nội dung không chồng lên nhau
-    doc.moveDown(4); // Di chuyển xuống dưới để tạo khoảng trống sau header
+    doc.moveDown(4); // Khoảng trống sau header
 
-    // Thêm nội dung vào PDF với font Poppins
-    doc.font('Poppins-Medium'); // Sử dụng font Poppins-Bold cho tên
+    // Thêm nội dung vào PDF
+    doc.font('Poppins-Bold');
     doc.fontSize(38).text(name, {
       align: 'center',
       lineGap: 10,
     });
-    doc.font('Poppins'); // Sử dụng font Poppins thông thường cho công ty
+
+    doc.font('Poppins');
     doc.fontSize(16).text(company, {
       align: 'center',
       lineGap: 10,
@@ -71,17 +72,17 @@ app.post('/generate-pdf', async (req, res) => {
 
     // Thêm hình ảnh QR code vào PDF từ buffer
     doc.image(qrImageBuffer, {
-      fit: [215, 215],
+      fit: [150, 150], // Giảm kích thước QR code để giảm dung lượng
       align: 'center',
       valign: 'center',
-      x: (doc.page.width - 215) / 2, // Căn giữa QR code theo chiều ngang
-      y: doc.y                       // Đặt QR code ở vị trí hiện tại của con trỏ
+      x: (doc.page.width - 150) / 2,
+      y: doc.y
     });
 
     // Thêm hình ảnh footer
     doc.image(footerImageBuffer, 0, doc.page.height - 50, {
-      width: doc.page.width, // Chiều rộng bằng chiều rộng trang
-      height: 40             // Chiều cao footer khoảng 40 pixels
+      width: doc.page.width,
+      height: 40
     });
 
     doc.end(); // Kết thúc tạo file PDF
