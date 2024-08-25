@@ -36,8 +36,8 @@ app.post('/generate-pdf', async (req, res) => {
     });
 
     // Thêm nội dung vào PDF
-    doc.fontSize(25).text('Name: ' + name, 100, 100);
-    doc.fontSize(20).text('Company: ' + company, 100, 140);
+    doc.fontSize(36).text(name, 100, 100);
+    doc.fontSize(18).text(company, 100, 140);
 
     // Thêm hình ảnh QR code vào PDF từ buffer
     doc.image(imageBuffer, {
