@@ -41,9 +41,9 @@ app.post('/generate-pdf', async (req, res) => {
     });
 
     // Đăng ký font Poppins
-    doc.registerFont('Poppins', 'fonts/Poppins-Regular.ttf');
-    doc.registerFont('Poppins-Bold', 'fonts/Poppins-Bold.ttf');
-    doc.registerFont('Poppins-Medium', 'fonts/Poppins-Medium.ttf');
+doc.registerFont('Poppins', 'api/fonts/Poppins-Regular.ttf');
+doc.registerFont('Poppins-Bold', 'api/fonts/Poppins-Bold.ttf');
+doc.registerFont('Poppins-Medium', 'api/fonts/Poppins-Medium.ttf');
 
     // Thêm hình ảnh header
     doc.image(headerImageBuffer, 0, 0, {
