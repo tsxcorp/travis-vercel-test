@@ -30,7 +30,7 @@ app.post('/generate-pdf', async (req, res) => {
     const footerImageBuffer = Buffer.from(footerResponse.data, 'base64');
 
     // Tạo file PDF với khổ A5
-    const doc = new PDFDocument({ size: 'A5' });
+    const doc = new PDFDocument({ size: 'A5', margin: 50 }); // Thiết lập margin để tránh nội dung quá sát biên
     let buffers = [];
 
     doc.on('data', buffers.push.bind(buffers));
@@ -41,39 +41,39 @@ app.post('/generate-pdf', async (req, res) => {
     });
 
     // Thêm hình ảnh header
-    doc.image(headerImageBuffer, {
+    doc.image(headerImageBuffer, 0, 0, {
       width: doc.page.width, // Chiều rộng bằng chiều rộng trang
-      height: 60,            // Chiều cao header khoảng 60 pixels
-      align: 'center',
-      valign: 'top',
+      height: 60             // Chiều cao header khoảng 60 pixels
     });
 
-    // Thêm hình ảnh footer
-    doc.image(footerImageBuffer, {
-      width: doc.page.width, // Chiều rộng bằng chiều rộng trang
-      height: 40,            // Chiều cao footer khoảng 40 pixels
-      align: 'center',
-      valign: 'bottom',
-    });
+    // Thêm khoảng trống sau header để nội dung không chồng lên nhau
+    doc.moveDown(4); // Di chuyển xuống dưới để tạo khoảng trống sau header
 
     // Thêm nội dung vào PDF
-    doc.moveDown(2); // Tạo khoảng trống giữa header và nội dung chính
     doc.fontSize(38).text(name, {
       align: 'center',
       lineGap: 10,
     });
-    doc.moveDown();
+    doc.moveDown(0.5); // Khoảng cách giữa tên và công ty
     doc.fontSize(16).text(company, {
       align: 'center',
       lineGap: 10,
     });
-    doc.moveDown(2);
+    doc.moveDown(2); // Khoảng cách giữa văn bản và QR code
 
     // Thêm hình ảnh QR code vào PDF từ buffer
     doc.image(qrImageBuffer, {
       fit: [100, 100],
       align: 'center',
       valign: 'center',
+      x: (doc.page.width - 100) / 2, // Căn giữa QR code theo chiều ngang
+      y: doc.y                       // Đặt QR code ở vị trí hiện tại của con trỏ
+    });
+
+    // Thêm hình ảnh footer
+    doc.image(footerImageBuffer, 0, doc.page.height - 50, {
+      width: doc.page.width, // Chiều rộng bằng chiều rộng trang
+      height: 40             // Chiều cao footer khoảng 40 pixels
     });
 
     doc.end(); // Kết thúc tạo file PDF
