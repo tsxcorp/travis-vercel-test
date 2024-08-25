@@ -29,15 +29,13 @@ app.post('/generate-pdf', async (req, res) => {
     const headerResponse = await axios.get(headerUrl, { responseType: 'arraybuffer' });
     const footerResponse = await axios.get(footerUrl, { responseType: 'arraybuffer' });
 
-    // Nén hình ảnh header và footer, giữ nguyên QR code
+    // Nén hình ảnh header và footer, không thay đổi kích thước hiển thị
     const compressedHeader = await sharp(headerResponse.data)
-      .resize(595, 60) // Điều chỉnh kích thước
-      .jpeg({ quality: 60 }) // Nén với chất lượng 60%
+      .jpeg({ quality: 60 }) // Nén với chất lượng 60% mà không thay đổi kích thước
       .toBuffer();
 
     const compressedFooter = await sharp(footerResponse.data)
-      .resize(595, 40) // Điều chỉnh kích thước
-      .jpeg({ quality: 60 }) // Nén với chất lượng 60%
+      .jpeg({ quality: 60 }) // Nén với chất lượng 60% mà không thay đổi kích thước
       .toBuffer();
 
     // Không nén QR code, giữ nguyên kích thước 215x215
@@ -63,7 +61,7 @@ app.post('/generate-pdf', async (req, res) => {
     // Thêm hình ảnh header đã nén
     doc.image(compressedHeader, 0, 0, {
       width: doc.page.width,
-      height: 60
+      height: 60 // Giữ nguyên kích thước header
     });
 
     doc.moveDown(4); // Khoảng trống sau header
@@ -93,7 +91,7 @@ app.post('/generate-pdf', async (req, res) => {
     // Thêm hình ảnh footer đã nén
     doc.image(compressedFooter, 0, doc.page.height - 50, {
       width: doc.page.width,
-      height: 40
+      height: 40 // Giữ nguyên kích thước footer
     });
 
     doc.end(); // Kết thúc tạo file PDF
