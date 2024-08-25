@@ -42,7 +42,8 @@ app.post('/generate-pdf', async (req, res) => {
 
         // Khởi chạy Puppeteer với cấu hình để hoạt động trên môi trường Vercel
         const browser = await puppeteer.launch({
-            args: ['--no-sandbox', '--disable-setuid-sandbox'],
+            headless: 'new',  // Sử dụng chế độ headless mới nếu cần
+            args: ['--no-sandbox', '--disable-setuid-sandbox'] // Không cần chỉ định executablePath
         });
 
         const page = await browser.newPage();
