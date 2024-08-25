@@ -126,26 +126,25 @@ app.post('/generate-pdf', async (req, res) => {
 
 // Thêm endpoint mới cho in thẻ đeo
 app.get('/print-badge', (req, res) => {
-    const name = req.query.name || 'Tên Mặc Định';
-    const company = req.query.company || 'Công ty Mặc Định';
-    const qrCodeData = req.query.qrCodeUrl || 'Mặc Định';
-    const qrCodeUrl = `https://port.rx-vietnamshows.com/qr-code?data=${qrCodeData}&size=215`;
+  const name = req.query.name || 'Tên Mặc Định';
+  const company = req.query.company || 'Công ty Mặc Định';
+  const qrCodeUrl = req.query.qrCodeUrl || 'https://via.placeholder.com/150';  // Sử dụng trực tiếp URL của hình ảnh QR code
 
-    // Đọc nội dung từ file HTML
-    fs.readFile(path.join(__dirname, 'badge.html'), 'utf8', (err, data) => {
-        if (err) {
-            console.error('Error reading HTML file:', err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
+  // Đọc nội dung từ file HTML
+  fs.readFile(path.join(__dirname, 'badge.html'), 'utf8', (err, data) => {
+      if (err) {
+          console.error('Error reading HTML file:', err);
+          res.status(500).send('Internal Server Error');
+          return;
+      }
 
-        // Thay thế placeholders bằng dữ liệu thực tế
-        let htmlContent = data.replace('{{name}}', name)
-                              .replace('{{company}}', company)
-                              .replace('{{qrCodeUrl}}', qrCodeUrl);
+      // Thay thế placeholders bằng dữ liệu thực tế
+      let htmlContent = data.replace('{{name}}', name)
+                            .replace('{{company}}', company)
+                            .replace('{{qrCodeUrl}}', qrCodeUrl);  // Sử dụng URL QR code trực tiếp
 
-        res.send(htmlContent);
-    });
+      res.send(htmlContent);
+  });
 });
 
 // Lắng nghe yêu cầu trên một cổng cụ thể
