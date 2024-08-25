@@ -14,18 +14,23 @@ app.get('/', (req, res) => {
 // Xử lý yêu cầu POST đến /generate-pdf
 app.post('/generate-pdf', async (req, res) => {
   try {
-    const { name, company, qrCodeUrl } = req.body;
+    const { name, company, qrCodeUrl, headerUrl, footerUrl } = req.body;
 
-    if (!name || !company || !qrCodeUrl) {
+    if (!name || !company || !qrCodeUrl || !headerUrl || !footerUrl) {
       return res.status(400).json({ error: 'Invalid input data' });
     }
 
-    // Tải hình ảnh từ URL và chuyển đổi thành buffer
-    const response = await axios.get(qrCodeUrl, { responseType: 'arraybuffer' });
-    const imageBuffer = Buffer.from(response.data, 'base64');
+    // Tải hình ảnh header, footer, và QR code từ URL
+    const qrResponse = await axios.get(qrCodeUrl, { responseType: 'arraybuffer' });
+    const headerResponse = await axios.get(headerUrl, { responseType: 'arraybuffer' });
+    const footerResponse = await axios.get(footerUrl, { responseType: 'arraybuffer' });
 
-    // Tạo file PDF
-    const doc = new PDFDocument();
+    const qrImageBuffer = Buffer.from(qrResponse.data, 'base64');
+    const headerImageBuffer = Buffer.from(headerResponse.data, 'base64');
+    const footerImageBuffer = Buffer.from(footerResponse.data, 'base64');
+
+    // Tạo file PDF với khổ A5
+    const doc = new PDFDocument({ size: 'A5' });
     let buffers = [];
 
     doc.on('data', buffers.push.bind(buffers));
@@ -35,12 +40,37 @@ app.post('/generate-pdf', async (req, res) => {
       res.json({ base64: base64data });
     });
 
+    // Thêm hình ảnh header
+    doc.image(headerImageBuffer, {
+      width: doc.page.width, // Chiều rộng bằng chiều rộng trang
+      height: 60,            // Chiều cao header khoảng 60 pixels
+      align: 'center',
+      valign: 'top',
+    });
+
+    // Thêm hình ảnh footer
+    doc.image(footerImageBuffer, {
+      width: doc.page.width, // Chiều rộng bằng chiều rộng trang
+      height: 40,            // Chiều cao footer khoảng 40 pixels
+      align: 'center',
+      valign: 'bottom',
+    });
+
     // Thêm nội dung vào PDF
-    doc.fontSize(36).text(name, 100, 100);
-    doc.fontSize(18).text(company, 100, 140);
+    doc.moveDown(2); // Tạo khoảng trống giữa header và nội dung chính
+    doc.fontSize(38).text(name, {
+      align: 'center',
+      lineGap: 10,
+    });
+    doc.moveDown();
+    doc.fontSize(16).text(company, {
+      align: 'center',
+      lineGap: 10,
+    });
+    doc.moveDown(2);
 
     // Thêm hình ảnh QR code vào PDF từ buffer
-    doc.image(imageBuffer, {
+    doc.image(qrImageBuffer, {
       fit: [100, 100],
       align: 'center',
       valign: 'center',
