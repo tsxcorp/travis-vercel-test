@@ -4,7 +4,7 @@
   "main": "api/server.js",
   "scripts": {
     "start": "node api/server.js",
-    "install": "npx puppeteer install", // Thêm lệnh này để cài đặt Chromium
+    "install": "npx puppeteer install",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
