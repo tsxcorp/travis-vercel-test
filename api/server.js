@@ -68,7 +68,7 @@ app.post('/generate-pdf', async (req, res) => {
 
     // Thêm nội dung vào PDF
     doc.font('Poppins-Bold');
-    doc.fontSize(38).text(name, {
+    doc.fontSize(30).text(name, {
       align: 'center',
       lineGap: 10,
     });
