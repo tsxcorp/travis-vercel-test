@@ -42,5 +42,18 @@
         <div class="company">{{company}}</div>
         <img src="{{qrCodeUrl}}" alt="QR Code" class="qr-code"> <!-- Sử dụng trực tiếp URL QR code -->
     </div>
+
+    <script>
+        // Hàm để in và đóng cửa sổ sau 3 giây
+        function printAndClose() {
+            window.print(); // Gọi lệnh in
+            setTimeout(function() {
+                window.close(); // Đóng cửa sổ sau 3 giây
+            }, 3000);
+        }
+
+        // Gọi hàm printAndClose khi trang đã tải
+        window.onload = printAndClose;
+    </script>
 </body>
 </html>
