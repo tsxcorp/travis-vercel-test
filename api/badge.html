@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>In Badge A5</title>
+    <style>
+        .badge {
+            width: 148mm;
+            height: 210mm;
+            padding: 20px;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .name {
+            font-size: 38px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        .company {
+            font-size: 16px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+        .qr-code {
+            width: 150px;
+            height: 150px;
+        }
+    </style>
+</head>
+<body>
+    <div class="badge">
+        <div class="name">{{name}}</div>
+        <div class="company">{{company}}</div>
+        <img src="{{qrCodeUrl}}" alt="QR Code" class="qr-code">
+    </div>
+
+    <script>
+        function printAndClose() {
+            window.print();
+            setTimeout(function() {
+                window.close();
+            }, 3000);
+        }
+
+        window.onload = printAndClose;
+    </script>
+</body>
+</html>
