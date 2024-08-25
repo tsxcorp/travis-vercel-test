@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const PDFDocument = require('pdfkit');
 const axios = require('axios');
+const sharp = require('sharp'); // Thêm sharp để nén hình ảnh
 const app = express();
 
 app.use(bodyParser.json());
@@ -17,20 +18,30 @@ app.post('/generate-pdf', async (req, res) => {
     let { name, company, qrCodeUrl, headerUrl, footerUrl } = req.body;
 
     // Thiết lập giá trị mặc định nếu tham số trống hoặc null
-    name = name || 'No Name Provided';
+    name = name || 'VISITOR';
     company = company || 'No Company Provided';
     qrCodeUrl = qrCodeUrl || 'https://via.placeholder.com/150'; // Sử dụng hình ảnh mặc định nếu không có URL QR
     headerUrl = headerUrl || 'https://via.placeholder.com/595x60'; // Sử dụng header mặc định
     footerUrl = footerUrl || 'https://via.placeholder.com/595x40'; // Sử dụng footer mặc định
 
-    // Tải hình ảnh header, footer, và QR code từ URL
+    // Tải hình ảnh từ URL và nén bằng sharp
     const qrResponse = await axios.get(qrCodeUrl, { responseType: 'arraybuffer' });
     const headerResponse = await axios.get(headerUrl, { responseType: 'arraybuffer' });
     const footerResponse = await axios.get(footerUrl, { responseType: 'arraybuffer' });
 
+    // Nén hình ảnh header và footer, giữ nguyên QR code
+    const compressedHeader = await sharp(headerResponse.data)
+      .resize(595, 60) // Điều chỉnh kích thước
+      .jpeg({ quality: 60 }) // Nén với chất lượng 60%
+      .toBuffer();
+
+    const compressedFooter = await sharp(footerResponse.data)
+      .resize(595, 40) // Điều chỉnh kích thước
+      .jpeg({ quality: 60 }) // Nén với chất lượng 60%
+      .toBuffer();
+
+    // Không nén QR code, giữ nguyên kích thước 215x215
     const qrImageBuffer = Buffer.from(qrResponse.data, 'base64');
-    const headerImageBuffer = Buffer.from(headerResponse.data, 'base64');
-    const footerImageBuffer = Buffer.from(footerResponse.data, 'base64');
 
     // Tạo file PDF với khổ A5 và giảm chất lượng hình ảnh
     const doc = new PDFDocument({ size: 'A5', margin: 50, compress: true });
@@ -49,8 +60,8 @@ app.post('/generate-pdf', async (req, res) => {
     doc.registerFont('Poppins-Bold', path.join(__dirname, 'fonts/Poppins-Bold.ttf'));
     doc.registerFont('Poppins-Medium', path.join(__dirname, 'fonts/Poppins-Medium.ttf'));
 
-    // Thêm hình ảnh header
-    doc.image(headerImageBuffer, 0, 0, {
+    // Thêm hình ảnh header đã nén
+    doc.image(compressedHeader, 0, 0, {
       width: doc.page.width,
       height: 60
     });
@@ -72,15 +83,15 @@ app.post('/generate-pdf', async (req, res) => {
 
     // Thêm hình ảnh QR code vào PDF từ buffer
     doc.image(qrImageBuffer, {
-      fit: [150, 150], // Giảm kích thước QR code để giảm dung lượng
+      fit: [215, 215], // Giữ nguyên kích thước QR code
       align: 'center',
       valign: 'center',
-      x: (doc.page.width - 150) / 2,
+      x: (doc.page.width - 215) / 2, // Căn giữa theo chiều ngang
       y: doc.y
     });
 
-    // Thêm hình ảnh footer
-    doc.image(footerImageBuffer, 0, doc.page.height - 50, {
+    // Thêm hình ảnh footer đã nén
+    doc.image(compressedFooter, 0, doc.page.height - 50, {
       width: doc.page.width,
       height: 40
     });
