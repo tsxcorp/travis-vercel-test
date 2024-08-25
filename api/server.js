@@ -29,13 +29,13 @@ app.post('/generate-pdf', async (req, res) => {
     const headerResponse = await axios.get(headerUrl, { responseType: 'arraybuffer' });
     const footerResponse = await axios.get(footerUrl, { responseType: 'arraybuffer' });
 
-    // Nén hình ảnh header và footer, không thay đổi kích thước hiển thị
+    // Nén hình ảnh header và footer mà vẫn giữ định dạng PNG
     const compressedHeader = await sharp(headerResponse.data)
-      .jpeg({ quality: 60 }) // Nén với chất lượng 60% mà không thay đổi kích thước
+      .png({ quality: 60 }) // Nén với chất lượng 60% nhưng giữ định dạng PNG
       .toBuffer();
 
     const compressedFooter = await sharp(footerResponse.data)
-      .jpeg({ quality: 60 }) // Nén với chất lượng 60% mà không thay đổi kích thước
+      .png({ quality: 60 }) // Nén với chất lượng 60% nhưng giữ định dạng PNG
       .toBuffer();
 
     // Không nén QR code, giữ nguyên kích thước 215x215
