@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer'); // Sử dụng Puppeteer để tạo PDF
 const fs = require('fs');
 const path = require('path');
 const app = express();
@@ -43,7 +43,6 @@ app.post('/generate-pdf', async (req, res) => {
         // Khởi chạy Puppeteer với cấu hình để hoạt động trên môi trường Vercel
         const browser = await puppeteer.launch({
             args: ['--no-sandbox', '--disable-setuid-sandbox'],
-            executablePath: process.env.CHROME_PATH || '/usr/bin/chromium-browser',
         });
 
         const page = await browser.newPage();
