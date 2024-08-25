@@ -88,57 +88,26 @@ app.post('/generate-pdf', async (req, res) => {
     } else if (type === 'group') {
       // Layout cho nhóm
 
-      // Thông tin của nhóm
-      doc.font('Poppins-Bold');
-      doc.fontSize(20).text('Group Information', {
-        align: 'center',
-        lineGap: 5,
-      });
+      // Bố trí thông tin công ty
+      doc.font('Poppins-Bold').fontSize(18).text(company, { align: 'center' });
+      doc.moveDown(1.5);
 
-      doc.font('Poppins');
-      doc.fontSize(12).text('Group QR Code:', {
-        align: 'center',
-        lineGap: 5,
-      });
+      // Thiết lập bảng để hiển thị QR code và thông tin
+      const tableTop = doc.y;
+      const column1Left = 50;
+      const column2Left = doc.page.width / 2 + 20;
 
-      // Thêm QR code của nhóm
-      doc.image(qrGroupImageBuffer, {
-        fit: [150, 150],
-        align: 'center',
-        valign: 'center',
-        x: (doc.page.width - 150) / 2,
-        y: doc.y
-      });
+      // Thông tin của nhóm và QR code nhóm
+      doc.font('Poppins').fontSize(12).text('Scan this QR to print all your Group Badges', column1Left, tableTop);
+      doc.image(qrGroupImageBuffer, column1Left, tableTop + 20, { width: 100, height: 100 });
 
-      doc.moveDown(1.5); // Khoảng cách sau QR code nhóm
+      // Thông tin cá nhân và QR code cá nhân
+      const memberInfoTop = tableTop + 150;
+      doc.font('Poppins').fontSize(12).text('Scan this QR to print only your Badge', column1Left, memberInfoTop);
+      doc.image(qrImageBuffer, column1Left, memberInfoTop + 20, { width: 100, height: 100 });
 
-      // Thông tin cá nhân
-      doc.font('Poppins-Bold');
-      doc.fontSize(20).text('Member Information', {
-        align: 'center',
-        lineGap: 5,
-      });
-
-      doc.font('Poppins');
-      doc.fontSize(12).text(name, {
-        align: 'center',
-        lineGap: 5,
-      });
-
-      doc.font('Poppins');
-      doc.fontSize(12).text(company, {
-        align: 'center',
-        lineGap: 5,
-      });
-
-      // Thêm QR code cá nhân
-      doc.image(qrImageBuffer, {
-        fit: [150, 150],
-        align: 'center',
-        valign: 'center',
-        x: (doc.page.width - 150) / 2,
-        y: doc.y
-      });
+      // Hiển thị tên
+      doc.font('Poppins-Bold').fontSize(16).text(name, column2Left, memberInfoTop + 50);
     }
 
     // Thêm hình ảnh footer đã nén
