@@ -50,7 +50,7 @@ app.post('/generate-pdf', async (req, res) => {
     doc.moveDown(4); // Di chuyển xuống dưới để tạo khoảng trống sau header
 
     // Thêm nội dung vào PDF
-    doc.fontSize(32).text(name, {
+    doc.fontSize(38).text(name, {
       align: 'center',
       lineGap: 10,
     });
@@ -66,7 +66,7 @@ app.post('/generate-pdf', async (req, res) => {
       fit: [215, 215],
       align: 'center',
       valign: 'center',
-      x: (doc.page.width - 100) / 2, // Căn giữa QR code theo chiều ngang
+      x: (doc.page.width - 215) / 2, // Căn giữa QR code theo chiều ngang
       y: doc.y                       // Đặt QR code ở vị trí hiện tại của con trỏ
     });
 
