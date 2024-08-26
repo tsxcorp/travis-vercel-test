@@ -49,8 +49,11 @@ app.post('/generate-pdf', async (req, res) => {
         const compressedHeader = await sharp(headerResponse.data).png({ quality: 60 }).toBuffer();
         const compressedFooter = await sharp(footerResponse.data).png({ quality: 60 }).toBuffer();
 
+        // Thiết lập chiều dài của PDF tùy thuộc vào số lượng thành viên
+        const pageHeight = 300 + memberQRCodes.length * 150; // Chiều cao động, dựa trên số lượng thành viên
+
         // Tạo file PDF với khổ A4 để hỗ trợ nhiều nội dung
-        const doc = new PDFDocument({ size: 'A4', margin: 50, compress: true });
+        const doc = new PDFDocument({ size: [595, pageHeight], margin: 50, compress: true });
         let buffers = [];
 
         doc.on('data', buffers.push.bind(buffers));
@@ -100,46 +103,41 @@ app.post('/generate-pdf', async (req, res) => {
             doc.font('Poppins-Bold').fontSize(24).text('Group Badge', { align: 'center' });
             doc.moveDown(1.5);
 
+            // Khung viền cho QR Group
+            doc.rect(50, doc.y, 495, 150).stroke();
+            doc.moveDown(0.5);
+
             // Hiển thị QR code của nhóm
+            doc.font('Poppins').fontSize(14).text('Scan this QR to print all your Group Badges', { align: 'left' });
             doc.image(qrCodeGroup, {
-                fit: [250, 250],
-                align: 'center',
-                valign: 'center',
-                x: (doc.page.width - 250) / 2,
-                y: doc.y
+                width: 100,
+                height: 100,
+                x: doc.page.width / 2 + 50,
+                y: doc.y - 15
             });
 
-            doc.moveDown(2);
+            doc.moveDown(6);
 
-            // Thông tin công ty và danh sách các thành viên
-            doc.font('Poppins-Bold').fontSize(18).text(company, { align: 'center' });
-            doc.moveDown(1.5);
+            // Thông tin và QR code của từng thành viên
+            doc.font('Poppins-Bold').fontSize(18).text('Here is all your colleagues\'s QR', { align: 'center' });
+            doc.moveDown(1);
 
             memberQRCodes.forEach((member, index) => {
-                if (doc.y + 120 > doc.page.height - 50) {
-                    // Thêm trang mới nếu không đủ không gian
-                    doc.addPage();
-                    doc.image(compressedHeader, 0, 0, {
-                        width: doc.page.width,
-                        height: 60
-                    });
-                    doc.moveDown(2);
-                }
-
-                doc.font('Poppins-Bold').fontSize(14).text(`Member ${index + 1}: ${member.name}`, 50, doc.y);
+                // Tạo khung viền cho mỗi thành viên
+                doc.rect(50, doc.y, 495, 100).stroke();
+                doc.font('Poppins-Bold').fontSize(14).text(`Member ${index + 1}: ${member.name}`, 60, doc.y + 20);
                 doc.image(member.qrCode, {
                     width: 100,
                     height: 100,
                     x: doc.page.width / 2 + 50,
-                    y: doc.y
+                    y: doc.y + 10
                 });
-
-                doc.moveDown(3); // Di chuyển xuống sau mỗi mã QR của thành viên
+                doc.moveDown(3.5); // Di chuyển xuống sau mỗi mã QR của thành viên
             });
         }
 
-        // Thêm hình ảnh footer đã nén trên trang cuối
-        doc.image(compressedFooter, 0, doc.page.height - 50, {
+        // Thêm hình ảnh footer đã nén
+        doc.image(compressedFooter, 0, pageHeight - 50, {
             width: doc.page.width,
             height: 40
         });
