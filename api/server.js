@@ -124,32 +124,59 @@ app.post('/generate-pdf', async (req, res) => {
   }
 });
 
-// Xử lý yêu cầu GET đến /print-badge
-app.get('/print-badge', (req, res) => {
-  const name = req.query.name || 'Tên Mặc Định';
-  const company = req.query.company || 'Công ty Mặc Định';
-  const encryptKey = req.query.encryptKey || 'Mặc Định';
+const express = require('express');
+const bodyParser = require('body-parser');
+const qrcode = require('qrcode');  // Thêm thư viện QR code
+const fs = require('fs');
+const path = require('path');
+const app = express();
 
-  // Encode encryptKey để dùng làm URL cho QR code
-  const encodedEncryptKey = encodeURIComponent(encryptKey); // Đảm bảo mã hóa ký tự đặc biệt
-  const qrCodeUrl = `https://port.rx-vietnamshows.com/qr-code?data=${encodedEncryptKey}&size=215`;
+app.use(bodyParser.json());
 
-  // Đọc nội dung từ file HTML
-  fs.readFile(path.join(__dirname, 'badge.html'), 'utf8', (err, data) => {
-      if (err) {
-          console.error('Error reading HTML file:', err);
-          res.status(500).send('Internal Server Error');
-          return;
-      }
-
-      // Thay thế placeholders bằng dữ liệu thực tế
-      let htmlContent = data.replace('{{name}}', name)
-                            .replace('{{company}}', company)
-                            .replace('{{qrCodeUrl}}', qrCodeUrl); // Sử dụng URL QR code với encryptKey đã mã hóa
-
-      res.send(htmlContent);
-  });
+// Xử lý yêu cầu đến root URL
+app.get('/', (req, res) => {
+    res.send('API is running. Use POST /generate-pdf to generate a PDF or GET /print-badge to print a badge.');
 });
+
+// Xử lý yêu cầu GET đến /print-badge
+app.get('/print-badge', async (req, res) => {
+    const name = req.query.name || 'Tên Mặc Định';
+    const company = req.query.company || 'Công ty Mặc Định';
+    const encryptKey = req.query.encryptKey || 'Mặc Định';
+
+    // Sử dụng thư viện qrcode để tạo QR code từ encryptKey
+    try {
+        const qrCodeDataUrl = await qrcode.toDataURL(encryptKey); // Tạo QR code dưới dạng Data URL
+
+        // Đọc nội dung từ file HTML
+        fs.readFile(path.join(__dirname, 'badge.html'), 'utf8', (err, data) => {
+            if (err) {
+                console.error('Error reading HTML file:', err);
+                res.status(500).send('Internal Server Error');
+                return;
+            }
+
+            // Thay thế placeholders bằng dữ liệu thực tế
+            let htmlContent = data.replace('{{name}}', name)
+                                  .replace('{{company}}', company)
+                                  .replace('{{qrCodeUrl}}', qrCodeDataUrl); // Sử dụng Data URL của QR code
+
+            res.send(htmlContent);
+        });
+    } catch (error) {
+        console.error('Error generating QR Code:', error);
+        res.status(500).send('Error generating QR Code');
+    }
+});
+
+// Lắng nghe yêu cầu trên một cổng cụ thể
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
+
+module.exports = app;
+
 
 // Lắng nghe yêu cầu trên một cổng cụ thể
 const PORT = process.env.PORT || 3000;
