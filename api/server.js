@@ -107,9 +107,9 @@ app.post('/generate-pdf', async (req, res) => {
             // Hiển thị QR code của nhóm
             doc.image(qrCodeGroup, {
                 fit: [150, 150],
-                align: 'right',
-                valign: 'right',
-                // x: (doc.page.width - 150) / 3,
+                align: 'center',
+                valign: 'center',
+                x: (doc.page.width - 200),
                 y: doc.y
             });
 
