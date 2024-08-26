@@ -75,12 +75,12 @@ app.post('/generate-pdf', async (req, res) => {
             height: 60
         });
 
-        doc.moveDown(2); // Khoảng trống sau header
+        doc.moveDown(2.5); // Khoảng trống sau header
 
         if (type === 'ind') {
             // Layout cho cá nhân
-            doc.font('Poppins-Bold');
-            doc.fontSize(38).text(name, {
+            doc.font('Poppins-Medium');
+            doc.fontSize(32).text(name, {
                 align: 'center',
                 lineGap: 10,
             });
@@ -109,14 +109,14 @@ app.post('/generate-pdf', async (req, res) => {
                 fit: [150, 150],
                 align: 'center',
                 valign: 'center',
-                x: (doc.page.width - 150) / 3,
+                x: (150 - doc.page.width) / 3,
                 y: doc.y
             });
 
             doc.moveDown(2);
 
             // Thông tin công ty và danh sách các thành viên
-            doc.font('Poppins-Bold').fontSize(18).text(company, { align: 'center' });
+            doc.font('Poppins-Bold').fontSize(18).text(company, { align: 'left' });
             doc.moveDown(1.5);
 
             memberQRCodes.forEach((member, index) => {
