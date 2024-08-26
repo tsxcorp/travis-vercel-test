@@ -49,11 +49,8 @@ app.post('/generate-pdf', async (req, res) => {
         const compressedHeader = await sharp(headerResponse.data).png({ quality: 60 }).toBuffer();
         const compressedFooter = await sharp(footerResponse.data).png({ quality: 60 }).toBuffer();
 
-        // Thiết lập chiều dài của PDF tùy thuộc vào số lượng thành viên
-        const pageHeight = 300 + memberQRCodes.length * 150; // Chiều cao động, dựa trên số lượng thành viên
-
-        // Tạo file PDF với chiều cao động
-        const doc = new PDFDocument({ size: [595, pageHeight], margin: 50, compress: true });
+        // Tạo file PDF với khổ A4 để hỗ trợ nhiều nội dung
+        const doc = new PDFDocument({ size: 'A4', margin: 50, compress: true });
         let buffers = [];
 
         doc.on('data', buffers.push.bind(buffers));
@@ -100,7 +97,7 @@ app.post('/generate-pdf', async (req, res) => {
             });
         } else if (type === 'group') {
             // Layout cho nhóm
-            doc.font('Poppins-Bold').fontSize(24).text('Group Badge', { align: 'left' });
+            doc.font('Poppins-Bold').fontSize(24).text('Group Badge', { align: 'center' });
             doc.moveDown(1.5);
 
             // Hiển thị QR code của nhóm
@@ -112,30 +109,37 @@ app.post('/generate-pdf', async (req, res) => {
                 y: doc.y
             });
 
-            doc.moveDown(8);
+            doc.moveDown(2);
 
             // Thông tin công ty và danh sách các thành viên
             doc.font('Poppins-Bold').fontSize(18).text(company, { align: 'center' });
             doc.moveDown(1.5);
 
-            // Đặt lại vị trí y cho thành viên để tránh chồng chéo
-            let yPosition = doc.y + 20;
-
             memberQRCodes.forEach((member, index) => {
-                doc.font('Poppins-Bold').fontSize(14).text(`Member ${index + 1}: ${member.name}`, 50, yPosition);
+                if (doc.y + 120 > doc.page.height - 50) {
+                    // Thêm trang mới nếu không đủ không gian
+                    doc.addPage();
+                    doc.image(compressedHeader, 0, 0, {
+                        width: doc.page.width,
+                        height: 60
+                    });
+                    doc.moveDown(2);
+                }
+
+                doc.font('Poppins-Bold').fontSize(14).text(`Member ${index + 1}: ${member.name}`, 50, doc.y);
                 doc.image(member.qrCode, {
                     width: 100,
                     height: 100,
                     x: doc.page.width / 2 + 50,
-                    y: yPosition - 15
+                    y: doc.y
                 });
-                yPosition += 120; // Tăng khoảng cách cho thành viên tiếp theo
-                doc.moveDown(1.5); // Di chuyển xuống sau mỗi mã QR của thành viên
+
+                doc.moveDown(3); // Di chuyển xuống sau mỗi mã QR của thành viên
             });
         }
 
-        // Thêm hình ảnh footer đã nén
-        doc.image(compressedFooter, 0, pageHeight - 50, {
+        // Thêm hình ảnh footer đã nén trên trang cuối
+        doc.image(compressedFooter, 0, doc.page.height - 50, {
             width: doc.page.width,
             height: 40
         });
