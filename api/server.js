@@ -100,7 +100,7 @@ app.post('/generate-pdf', async (req, res) => {
             });
         } else if (type === 'group') {
             // Layout cho nhóm
-            doc.font('Poppins-Bold').fontSize(24).text('Group Badge', { align: 'center' });
+            doc.font('Poppins-Bold').fontSize(24).text('Group Badge', { align: 'left' });
             doc.moveDown(1.5);
 
             // Hiển thị QR code của nhóm
@@ -112,7 +112,7 @@ app.post('/generate-pdf', async (req, res) => {
                 y: doc.y
             });
 
-            doc.moveDown(2);
+            doc.moveDown(8);
 
             // Thông tin công ty và danh sách các thành viên
             doc.font('Poppins-Bold').fontSize(18).text(company, { align: 'center' });
