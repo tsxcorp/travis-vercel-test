@@ -1,9 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const PDFDocument = require('pdfkit');
-const axios = require('axios');
+const qrcode = require('qrcode');  // Sử dụng thư viện QR code
 const sharp = require('sharp');
-const qrcode = require('qrcode');  // Thêm thư viện QR code
 const fs = require('fs');
 const path = require('path');
 const app = express();
@@ -18,25 +17,24 @@ app.get('/', (req, res) => {
 // Xử lý yêu cầu POST đến /generate-pdf
 app.post('/generate-pdf', async (req, res) => {
     try {
-        let { type, name, company, qrCodeUrl, qrCodeUrlGroup, headerUrl, footerUrl } = req.body;
+        let { type, name, company, indEncryptKey, groupEncryptKey, headerUrl, footerUrl } = req.body;
 
         // Thiết lập giá trị mặc định nếu tham số trống hoặc null
         type = type || 'ind';
         name = name || 'VISITOR';
         company = company || 'No Company Provided';
-        qrCodeUrl = qrCodeUrl || 'https://via.placeholder.com/150';
-        qrCodeUrlGroup = qrCodeUrlGroup || 'https://via.placeholder.com/150';
+        indEncryptKey = indEncryptKey || 'DefaultIndividualKey';
+        groupEncryptKey = groupEncryptKey || 'DefaultGroupKey';
         headerUrl = headerUrl || 'https://via.placeholder.com/595x60';
         footerUrl = footerUrl || 'https://via.placeholder.com/595x40';
 
+        // Sử dụng thư viện qrcode để tạo QR code từ các encrypt key
+        const qrCodeInd = await qrcode.toDataURL(indEncryptKey); // Tạo QR code cho cá nhân
+        const qrCodeGroup = await qrcode.toDataURL(groupEncryptKey); // Tạo QR code cho nhóm
+
         // Tải hình ảnh từ URL và nén bằng sharp
-        const qrResponse = await axios.get(qrCodeUrl, { responseType: 'arraybuffer' });
-        const qrGroupResponse = await axios.get(qrCodeUrlGroup, { responseType: 'arraybuffer' });
         const headerResponse = await axios.get(headerUrl, { responseType: 'arraybuffer' });
         const footerResponse = await axios.get(footerUrl, { responseType: 'arraybuffer' });
-
-        const qrImageBuffer = Buffer.from(qrResponse.data, 'base64');
-        const qrGroupImageBuffer = Buffer.from(qrGroupResponse.data, 'base64');
 
         const compressedHeader = await sharp(headerResponse.data).png({ quality: 60 }).toBuffer();
         const compressedFooter = await sharp(footerResponse.data).png({ quality: 60 }).toBuffer();
@@ -79,8 +77,8 @@ app.post('/generate-pdf', async (req, res) => {
                 lineGap: 10,
             });
 
-            // Thêm hình ảnh QR code cá nhân
-            doc.image(qrImageBuffer, {
+            // Thêm hình ảnh QR code cá nhân từ Data URL
+            doc.image(qrCodeInd, {
                 fit: [215, 215],
                 align: 'center',
                 valign: 'center',
@@ -101,12 +99,12 @@ app.post('/generate-pdf', async (req, res) => {
 
             // Thông tin của nhóm và QR code nhóm
             doc.font('Poppins').fontSize(12).text('Scan this QR to print all your Group Badges', column1Left, tableTop);
-            doc.image(qrGroupImageBuffer, column1Left, tableTop + 20, { width: 100, height: 100 });
+            doc.image(qrCodeGroup, column1Left, tableTop + 20, { width: 100, height: 100 });
 
             // Thông tin cá nhân và QR code cá nhân
             const memberInfoTop = tableTop + 150;
             doc.font('Poppins').fontSize(12).text('Scan this QR to print only your Badge', column1Left, memberInfoTop);
-            doc.image(qrImageBuffer, column1Left, memberInfoTop + 20, { width: 100, height: 100 });
+            doc.image(qrCodeInd, column1Left, memberInfoTop + 20, { width: 100, height: 100 });
 
             // Hiển thị tên
             doc.font('Poppins-Bold').fontSize(16).text(name, column2Left, memberInfoTop + 50);
