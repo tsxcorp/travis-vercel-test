@@ -118,15 +118,19 @@ app.post('/generate-pdf', async (req, res) => {
             doc.font('Poppins-Bold').fontSize(18).text(company, { align: 'center' });
             doc.moveDown(1.5);
 
+            // Đặt lại vị trí y cho thành viên để tránh chồng chéo
+            let yPosition = doc.y + 20;
+
             memberQRCodes.forEach((member, index) => {
-                doc.font('Poppins-Bold').fontSize(14).text(`Member ${index + 1}: ${member.name}`, { align: 'left' });
+                doc.font('Poppins-Bold').fontSize(14).text(`Member ${index + 1}: ${member.name}`, 50, yPosition);
                 doc.image(member.qrCode, {
                     width: 100,
                     height: 100,
-                    x: doc.page.width / 2 - 50,
-                    y: doc.y + 10
+                    x: doc.page.width / 2 + 50,
+                    y: yPosition - 15
                 });
-                doc.moveDown(3); // Di chuyển xuống sau mỗi mã QR của thành viên
+                yPosition += 120; // Tăng khoảng cách cho thành viên tiếp theo
+                doc.moveDown(1.5); // Di chuyển xuống sau mỗi mã QR của thành viên
             });
         }
 
