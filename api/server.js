@@ -49,11 +49,12 @@ app.post('/generate-pdf', async (req, res) => {
         const compressedHeader = await sharp(headerResponse.data).png({ quality: 60 }).toBuffer();
         const compressedFooter = await sharp(footerResponse.data).png({ quality: 60 }).toBuffer();
 
-        // Thiết lập chiều dài của PDF tùy thuộc vào số lượng thành viên
-        const pageHeight = 300 + memberQRCodes.length * 150; // Chiều cao động, dựa trên số lượng thành viên
+        // Tạo file PDF với chiều cao động cho nhóm, và cố định khổ A5 cho cá nhân
+        const pageHeight = type === 'ind' ? 595 : 300 + memberQRCodes.length * 150; // Chiều cao động cho nhóm, khổ A5 cho cá nhân
+        const docSize = type === 'ind' ? 'A5' : [595, pageHeight];
 
-        // Tạo file PDF với khổ A4 để hỗ trợ nhiều nội dung
-        const doc = new PDFDocument({ size: [595, pageHeight], margin: 50, compress: true });
+        // Tạo file PDF với kích thước xác định
+        const doc = new PDFDocument({ size: docSize, margin: 50, compress: true });
         let buffers = [];
 
         doc.on('data', buffers.push.bind(buffers));
@@ -103,36 +104,43 @@ app.post('/generate-pdf', async (req, res) => {
             doc.font('Poppins-Bold').fontSize(24).text('Group Badge', { align: 'center' });
             doc.moveDown(1.5);
 
-            // Khung viền cho QR Group
-            doc.rect(50, doc.y, 495, 150).stroke();
-            doc.moveDown(0.5);
-
             // Hiển thị QR code của nhóm
-            doc.font('Poppins').fontSize(14).text('Scan this QR to print all your Group Badges', { align: 'left' });
             doc.image(qrCodeGroup, {
-                width: 100,
-                height: 100,
-                x: doc.page.width / 2 + 50,
-                y: doc.y - 15
+                fit: [150, 150],
+                align: 'center',
+                valign: 'center',
+                x: (doc.page.width - 150) / 2,
+                y: doc.y
             });
 
-            doc.moveDown(6);
+            doc.moveDown(2);
 
-            // Thông tin và QR code của từng thành viên
-            doc.font('Poppins-Bold').fontSize(18).text('Here is all your colleagues\'s QR', { align: 'center' });
-            doc.moveDown(1);
+            // Thông tin công ty và danh sách các thành viên
+            doc.font('Poppins-Bold').fontSize(18).text(company, { align: 'center' });
+            doc.moveDown(1.5);
 
             memberQRCodes.forEach((member, index) => {
-                // Tạo khung viền cho mỗi thành viên
-                doc.rect(50, doc.y, 495, 100).stroke();
-                doc.font('Poppins-Bold').fontSize(14).text(`Member ${index + 1}: ${member.name}`, 60, doc.y + 20);
+                // Khung cho mỗi thành viên
+                const boxHeight = 100;
+                const boxMargin = 10;
+                const startY = doc.y;
+
+                // Vẽ khung hình cho mỗi thành viên
+                doc.rect(50, startY, 495, boxHeight).stroke();
+
+                // Hiển thị tên thành viên
+                doc.font('Poppins-Bold').fontSize(14).text(`Member ${index + 1}: ${member.name}`, 60, startY + 15);
+
+                // Hiển thị QR code thành viên
                 doc.image(member.qrCode, {
-                    width: 100,
-                    height: 100,
-                    x: doc.page.width / 2 + 50,
-                    y: doc.y + 10
+                    width: 80,
+                    height: 80,
+                    x: 480,
+                    y: startY + 10
                 });
-                doc.moveDown(3.5); // Di chuyển xuống sau mỗi mã QR của thành viên
+
+                doc.moveDown(boxHeight / 30); // Di chuyển xuống dưới để không chồng chéo lên thành viên tiếp theo
+                doc.y = startY + boxHeight + boxMargin; // Cập nhật vị trí y để vẽ khung thành viên kế tiếp
             });
         }
 
