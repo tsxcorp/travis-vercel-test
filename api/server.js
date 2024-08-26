@@ -1,8 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const PDFDocument = require('pdfkit');
-const qrcode = require('qrcode');  // Sử dụng thư viện QR code
+const axios = require('axios');  // Sử dụng axios để lấy hình ảnh từ URL
 const sharp = require('sharp');
+const qrcode = require('qrcode');  // Sử dụng thư viện QR code
 const fs = require('fs');
 const path = require('path');
 const app = express();
@@ -32,7 +33,7 @@ app.post('/generate-pdf', async (req, res) => {
         const qrCodeInd = await qrcode.toDataURL(indEncryptKey); // Tạo QR code cho cá nhân
         const qrCodeGroup = await qrcode.toDataURL(groupEncryptKey); // Tạo QR code cho nhóm
 
-        // Tải hình ảnh từ URL và nén bằng sharp
+        // Tải hình ảnh header và footer từ URL và nén bằng sharp
         const headerResponse = await axios.get(headerUrl, { responseType: 'arraybuffer' });
         const footerResponse = await axios.get(footerUrl, { responseType: 'arraybuffer' });
 
