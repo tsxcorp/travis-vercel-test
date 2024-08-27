@@ -159,9 +159,9 @@ app.post('/generate-pdf', async (req, res) => {
 
 // Xử lý yêu cầu GET đến /print-badge
 app.get('/print-badge', async (req, res) => {
-    const name = req.query.name || 'Tên Mặc Định';
-    const company = req.query.company || 'Công ty Mặc Định';
-    const encryptKey = req.query.encryptKey || 'Mặc Định';
+    const name = req.query.name || ' ';
+    const company = req.query.company || ' ';
+    const encryptKey = req.query.encryptKey || ' ';
 
     // Sử dụng thư viện qrcode để tạo QR code từ encryptKey
     try {
