@@ -159,34 +159,37 @@ app.post('/generate-pdf', async (req, res) => {
 
 // Xử lý yêu cầu GET đến /print-badge
 app.get('/print-badge', async (req, res) => {
-    const name = req.query.name || ' ';
-    const company = req.query.company || ' ';
-    const encryptKey = req.query.encryptKey || ' ';
+  const name = req.query.name || ' ';
+  const company = req.query.company || ' ';
+  const encryptKey = req.query.encryptKey || ' ';
+  const option = req.query.option || ' ';  // Thêm tham số option
 
-    // Sử dụng thư viện qrcode để tạo QR code từ encryptKey
-    try {
-        const qrCodeDataUrl = await qrcode.toDataURL(encryptKey); // Tạo QR code dưới dạng Data URL
+  // Sử dụng thư viện qrcode để tạo QR code từ encryptKey
+  try {
+      const qrCodeDataUrl = await qrcode.toDataURL(encryptKey); // Tạo QR code dưới dạng Data URL
 
-        // Đọc nội dung từ file HTML
-        fs.readFile(path.join(__dirname, 'badge.html'), 'utf8', (err, data) => {
-            if (err) {
-                console.error('Error reading HTML file:', err);
-                res.status(500).send('Internal Server Error');
-                return;
-            }
+      // Đọc nội dung từ file HTML
+      fs.readFile(path.join(__dirname, 'badge.html'), 'utf8', (err, data) => {
+          if (err) {
+              console.error('Error reading HTML file:', err);
+              res.status(500).send('Internal Server Error');
+              return;
+          }
 
-            // Thay thế placeholders bằng dữ liệu thực tế
-            let htmlContent = data.replace('{{name}}', name)
-                                  .replace('{{company}}', company)
-                                  .replace('{{qrCodeUrl}}', qrCodeDataUrl); // Sử dụng Data URL của QR code
+          // Thay thế placeholders bằng dữ liệu thực tế
+          let htmlContent = data.replace('{{name}}', name)
+                                .replace('{{company}}', company)
+                                .replace('{{qrCodeUrl}}', qrCodeDataUrl)
+                                .replace('{{option}}', option); // Thêm option vào HTML
 
-            res.send(htmlContent);
-        });
-    } catch (error) {
-        console.error('Error generating QR Code:', error);
-        res.status(500).send('Error generating QR Code');
-    }
+          res.send(htmlContent);
+      });
+  } catch (error) {
+      console.error('Error generating QR Code:', error);
+      res.status(500).send('Error generating QR Code');
+  }
 });
+
 
 // Lắng nghe yêu cầu trên một cổng cụ thể
 const PORT = process.env.PORT || 3000;

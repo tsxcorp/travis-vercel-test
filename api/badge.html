@@ -33,6 +33,13 @@
         .qr-code {
             width: 250px;
             height: 250px;
+            margin-bottom: 20px;
+        }
+
+        .option {
+            font-size: 20px; /* Cỡ chữ cho option */
+            text-transform: uppercase;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -41,6 +48,7 @@
         <div class="name">{{name}}</div>
         <div class="company">{{company}}</div>
         <img src="{{qrCodeUrl}}" alt="QR Code" class="qr-code"> <!-- Sử dụng trực tiếp URL QR code -->
+        <div class="option">{{option}}</div> <!-- Hiển thị option -->
     </div>
 
     <script>
