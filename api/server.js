@@ -68,6 +68,8 @@ app.post('/generate-pdf', async (req, res) => {
         doc.registerFont('Poppins', path.join(__dirname, 'fonts/Poppins-Regular.ttf'));
         doc.registerFont('Poppins-Bold', path.join(__dirname, 'fonts/Poppins-Bold.ttf'));
         doc.registerFont('Poppins-Medium', path.join(__dirname, 'fonts/Poppins-Medium.ttf'));
+        doc.registerFont('Poppins-SemiBold', path.join(__dirname, 'fonts/Poppins-SemiBold.ttf'));
+
 
         // Thêm hình ảnh header đã nén
         doc.image(compressedHeader, 0, 0, {
