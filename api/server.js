@@ -119,11 +119,12 @@ app.post('/generate-pdf', async (req, res) => {
                 y: doc.y
             });
 
+            doc.moveDown(5);
             memberQRCodes.forEach((member, index) => {
                 // Khung cho mỗi thành viên
                 const boxHeight = 100;
                 const boxMargin = 10;
-                const startY = doc.y + 60;
+                const startY = doc.y;
 
                 // Vẽ khung hình cho mỗi thành viên
                 doc.rect(50, startY, 495, boxHeight).stroke();
