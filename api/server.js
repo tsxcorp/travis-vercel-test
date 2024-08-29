@@ -119,19 +119,19 @@ app.post('/generate-pdf', async (req, res) => {
                 y: doc.y
             });
 
-            doc.moveDown(3);
+           
 
             memberQRCodes.forEach((member, index) => {
                 // Khung cho mỗi thành viên
                 const boxHeight = 100;
                 const boxMargin = 10;
-                const startY = doc.y;
+                const startY = doc.y + 20;
 
                 // Vẽ khung hình cho mỗi thành viên
                 doc.rect(50, startY, 495, boxHeight).stroke();
 
                 // Hiển thị tên thành viên
-                doc.font('Poppins-Medium').fontSize(14).text(`${member.name}`, 60, startY + 15);
+                doc.font('Poppins-Medium').fontSize(18).text(`${member.name}`, 60, startY + 15);
 
                 // Hiển thị QR code thành viên
                 doc.image(member.qrCode, {
