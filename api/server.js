@@ -119,7 +119,7 @@ app.post('/generate-pdf', async (req, res) => {
                 y: doc.y
             });
 
-            doc.moveDown(5);
+            doc.moveDown(7);
             memberQRCodes.forEach((member, index) => {
                 // Khung cho mỗi thành viên
                 const boxHeight = 100;
