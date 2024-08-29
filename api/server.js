@@ -123,39 +123,37 @@ app.post('/generate-pdf', async (req, res) => {
 
             // Thêm thông báo QR cho từng thành viên
             memberQRCodes.forEach((member, index) => {
-              const boxHeight = 100;
-              const boxMargin = 10;
-              const qrCodeSize = 80;
-              const startY = doc.y;
+                const boxHeight = 100;
+                const boxMargin = 10;
 
-              // Kiểm tra nếu không đủ chỗ, tạo trang mới
-              if (startY + boxHeight + boxMargin > doc.page.height - 60) {
-                  doc.addPage();
-                  // Thêm header ở mỗi trang mới
-                  doc.image(compressedHeader, 0, 0, {
-                      width: doc.page.width,
-                      height: 60
-                  });
-                  doc.moveDown(2.5);
-              }
+                // Kiểm tra nếu không đủ chỗ, tạo trang mới
+                if (doc.y + boxHeight + boxMargin > doc.page.height - 60) {
+                    doc.addPage();
+                    // Thêm header ở mỗi trang mới
+                    doc.image(compressedHeader, 0, 0, {
+                        width: doc.page.width,
+                        height: 60
+                    });
+                    doc.moveDown(2.5);
+                }
 
-              // Vẽ khung hình cho mỗi thành viên
-              doc.rect(50, startY, 495, boxHeight).stroke();
+                // Vẽ khung hình cho mỗi thành viên
+                doc.rect(50, doc.y, 495, boxHeight).stroke();
 
-              // Hiển thị tên thành viên
-              doc.font('Poppins-Medium').fontSize(18).text(`Member ${index + 1}: ${member.name}`, 60, startY + 15);
+                // Hiển thị tên thành viên
+                doc.font('Poppins-Medium').fontSize(18).text(`#${index + 1}: ${member.name}`, 60, doc.y + 15);
 
-              // Hiển thị QR code thành viên tại vị trí cố định
-              doc.image(member.qrCode, {
-                  width: qrCodeSize,
-                  height: qrCodeSize,
-                  x: 420, // Vị trí cố định bên phải khung
-                  y: startY + (boxHeight - qrCodeSize) / 2 // Giữa khung theo chiều dọc
-              });
+                // Hiển thị QR code thành viên
+                doc.image(member.qrCode, {
+                    width: 80,
+                    height: 80,
+                    x: 420,
+                    y: doc.y + 5
+                });
 
-              doc.moveDown(boxHeight / 30); // Di chuyển xuống dưới để không chồng chéo lên thành viên tiếp theo
-              doc.y = startY + boxHeight + boxMargin; // Cập nhật vị trí y để vẽ khung thành viên kế tiếp
-          });
+                doc.moveDown(boxHeight / 30); // Di chuyển xuống dưới để không chồng chéo lên thành viên tiếp theo
+                doc.y += boxHeight + boxMargin; // Cập nhật vị trí y để vẽ khung thành viên kế tiếp
+            });
         }
 
         // Thêm hình ảnh footer đã nén
