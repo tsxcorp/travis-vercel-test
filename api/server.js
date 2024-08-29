@@ -143,8 +143,8 @@ app.post('/generate-pdf', async (req, res) => {
                 doc.rect(50, doc.y, 495, boxHeight).stroke(); 
 
                 // Hiển thị tên thành viên
-                doc.font('Poppins-Medium').fontSize(9).text(`Use this code for individual check-in.`, 60, doc.y + 10);
-                doc.font('Poppins-Medium').fontSize(18).text(`#${index + 1}: ${member.name}`, 60, doc.y + 20);
+                doc.font('Poppins-Medium').fontSize(9).text(`Use this code for individual check-in.`, (doc.page.width / 2), doc.y + 10);
+                doc.font('Poppins-Medium').fontSize(18).text(`#${index + 1}: ${member.name}`, (doc.page.width / 2), doc.y + 20);
 
                 // Hiển thị QR code thành viên
                 doc.image(member.qrCode, {
