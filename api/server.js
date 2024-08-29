@@ -101,7 +101,7 @@ app.post('/generate-pdf', async (req, res) => {
             });
         } else if (type === 'group') {
             // Layout cho nhóm
-            doc.font('Poppins-Bold').fontSize(24).text('Group Badge', { align: 'left' });
+            doc.font('Poppins-Medium').fontSize(20).text("Your Group's Badge Information:", { align: 'left' });
             doc.moveDown(1);
 
             // Hiển thị QR code của nhóm
@@ -116,7 +116,7 @@ app.post('/generate-pdf', async (req, res) => {
             doc.moveDown(2);
 
             // Thông tin công ty và danh sách các thành viên
-            doc.font('Poppins-Bold').fontSize(18).text(company, { align: 'left' });
+            doc.font('Poppins-Medium').fontSize(22).text(company, { align: 'left' });
             doc.moveDown(2.5);
 
             memberQRCodes.forEach((member, index) => {
@@ -129,7 +129,7 @@ app.post('/generate-pdf', async (req, res) => {
                 doc.rect(50, startY, 495, boxHeight).stroke();
 
                 // Hiển thị tên thành viên
-                doc.font('Poppins-Bold').fontSize(14).text(`Member ${index + 1}: ${member.name}`, 60, startY + 15);
+                doc.font('Poppins-Medium').fontSize(14).text(`${member.name}`, 60, startY + 15);
 
                 // Hiển thị QR code thành viên
                 doc.image(member.qrCode, {
@@ -190,6 +190,8 @@ app.get('/print-badge', async (req, res) => {
   }
 });
 
+// Access 
+app.get('/nev-registration', );
 
 // Lắng nghe yêu cầu trên một cổng cụ thể
 const PORT = process.env.PORT || 3000;
