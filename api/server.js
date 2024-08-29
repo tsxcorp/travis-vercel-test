@@ -120,28 +120,39 @@ app.post('/generate-pdf', async (req, res) => {
             });
 
             doc.moveDown(6.5);
+
+            // Thêm thông báo QR cho từng thành viên
             memberQRCodes.forEach((member, index) => {
-                // Khung cho mỗi thành viên
                 const boxHeight = 100;
                 const boxMargin = 10;
-                const startY = doc.y;
+
+                // Kiểm tra nếu không đủ chỗ, tạo trang mới
+                if (doc.y + boxHeight + boxMargin > doc.page.height - 60) {
+                    doc.addPage();
+                    // Thêm header ở mỗi trang mới
+                    doc.image(compressedHeader, 0, 0, {
+                        width: doc.page.width,
+                        height: 60
+                    });
+                    doc.moveDown(2.5);
+                }
 
                 // Vẽ khung hình cho mỗi thành viên
-                doc.rect(50, startY, 495, boxHeight).stroke();
+                doc.rect(50, doc.y, 495, boxHeight).stroke();
 
                 // Hiển thị tên thành viên
-                doc.font('Poppins-Medium').fontSize(18).text(`${member.name}`, 60, startY + 15);
+                doc.font('Poppins-Medium').fontSize(18).text(`Member ${index + 1}: ${member.name}`, 60, doc.y + 15);
 
                 // Hiển thị QR code thành viên
                 doc.image(member.qrCode, {
                     width: 80,
                     height: 80,
                     x: 420,
-                    y: startY + 10
+                    y: doc.y + 10
                 });
 
                 doc.moveDown(boxHeight / 30); // Di chuyển xuống dưới để không chồng chéo lên thành viên tiếp theo
-                doc.y = startY + boxHeight + boxMargin; // Cập nhật vị trí y để vẽ khung thành viên kế tiếp
+                doc.y += boxHeight + boxMargin; // Cập nhật vị trí y để vẽ khung thành viên kế tiếp
             });
         }
 
