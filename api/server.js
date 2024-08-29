@@ -145,9 +145,9 @@ app.post('/generate-pdf', async (req, res) => {
                 // Hiển thị tên thành viên với khoảng cách dòng nhỏ hơn
                 doc.font('Poppins-Medium').fontSize(9).text(`Use this code for individual check-in.`, 60, doc.y + 10, {
                   align: 'center',
-                  lineGap: 4 // Giảm khoảng cách dòng
+                  lineGap: 1 // Giảm khoảng cách dòng
                 });
-                doc.font('Poppins-Medium').fontSize(18).text(`#${index + 1}: ${member.name}`, 60, doc.y + 20, {
+                doc.font('Poppins-Medium').fontSize(18).text(`#${index + 1}: ${member.name}`, 60, doc.y + 15, {
                   align: 'center',
                   lineGap: 4 // Giảm khoảng cách dòng
                 });
