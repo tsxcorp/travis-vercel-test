@@ -103,12 +103,12 @@ app.post('/generate-pdf', async (req, res) => {
             });
         } else if (type === 'group') {
             // Layout cho nhóm
-            doc.font('Poppins-Medium').fontSize(20).text("YOUR GROUP'S BADGES INFORMATION:", { align: 'center' });
+            doc.font('Poppins-Medium').fontSize(14).text("YOUR GROUP'S BADGES INFORMATION:", { align: 'center' });
             doc.moveDown(1);
 
             // Thông tin công ty và danh sách các thành viên
-            doc.font('Poppins-SemiBold').fontSize(22).text(company, { align: 'left' });
-            doc.moveDown(2.5);
+            doc.font('Poppins-SemiBold').fontSize(22).text(company, { align: 'center' });
+            doc.moveDown(1);
 
             // Hiển thị QR code của nhóm
             doc.image(qrCodeGroup, {
