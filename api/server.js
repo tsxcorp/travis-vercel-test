@@ -160,10 +160,11 @@ app.post('/generate-pdf', async (req, res) => {
         }
 
         // Thêm hình ảnh footer đã nén
-        doc.image(compressedFooter, 0, pageHeight - 50, {
-            width: doc.page.width,
-            height: 40
-        });
+        doc.image(compressedFooter, 0, pageHeight - 40, {
+          fit: [doc.page.width, 40], // Sử dụng `fit` để điều chỉnh tỷ lệ hình ảnh
+          align: 'center',
+          valign: 'center'
+      });
 
         doc.end(); // Kết thúc tạo file PDF
     } catch (error) {
