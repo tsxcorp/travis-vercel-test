@@ -145,10 +145,10 @@ app.post('/generate-pdf', async (req, res) => {
 
                 // Hiển thị QR code thành viên
                 doc.image(member.qrCode, {
-                    width: 80,
-                    height: 80,
-                    x: 420,
-                    y: doc.y + 5
+                    width: 120,
+                    height: 120,
+                    x: 390,
+                    y: doc.y
                 });
 
                 doc.moveDown(boxHeight / 30); // Di chuyển xuống dưới để không chồng chéo lên thành viên tiếp theo
