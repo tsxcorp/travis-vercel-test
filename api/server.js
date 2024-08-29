@@ -104,11 +104,11 @@ app.post('/generate-pdf', async (req, res) => {
         } else if (type === 'group') {
             // Layout cho nhóm
             doc.font('Poppins-Medium').fontSize(14).text("YOUR GROUP'S BADGES INFORMATION:", { align: 'center' });
-            doc.moveDown(1);
+            doc.moveDown(0.5);
 
             // Thông tin công ty và danh sách các thành viên
-            doc.font('Poppins-SemiBold').fontSize(22).text(company, { align: 'center' });
-            doc.moveDown(1);
+            doc.font('Poppins-SemiBold').fontSize(24).text(company, { align: 'center' });
+            doc.moveDown(0.75);
 
             // Hiển thị QR code của nhóm
             doc.image(qrCodeGroup, {
@@ -119,7 +119,7 @@ app.post('/generate-pdf', async (req, res) => {
                 y: doc.y
             });
 
-            doc.moveDown(7);
+            doc.moveDown(6.5);
             memberQRCodes.forEach((member, index) => {
                 // Khung cho mỗi thành viên
                 const boxHeight = 100;
