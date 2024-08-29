@@ -138,8 +138,8 @@ app.post('/generate-pdf', async (req, res) => {
                 }
 
                 // Vẽ khung hình cho mỗi thành viên
-                doc.lineWidth(1);
-                doc.strokeColor('black', 0.6); // Màu đen với độ trong suốt 0.5
+                doc.lineWidth(0.25);
+                doc.strokeColor('black', 0.3); // Màu đen với độ trong suốt 0.5
                 doc.rect(50, doc.y, 495, boxHeight).stroke(); 
 
                 // Hiển thị tên thành viên
