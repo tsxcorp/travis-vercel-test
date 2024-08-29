@@ -142,9 +142,16 @@ app.post('/generate-pdf', async (req, res) => {
                 doc.strokeColor('black', 0.3); // Màu đen với độ trong suốt 0.5
                 doc.rect(50, doc.y, 495, boxHeight).stroke(); 
 
-                // Hiển thị tên thành viên
-                doc.font('Poppins-Medium').fontSize(9).text(`Use this code for individual check-in.`, 60, doc.y + 10);
-                doc.font('Poppins-Medium').fontSize(18).text(`#${index + 1}: ${member.name}`, 60, doc.y + 20);
+                // Hiển thị tên thành viên với khoảng cách dòng nhỏ hơn
+                doc.font('Poppins-Medium').fontSize(9).text(`Use this code for individual check-in.`, 60, doc.y + 10, {
+                  align: 'center',
+                  lineGap: 4 // Giảm khoảng cách dòng
+                });
+                doc.font('Poppins-Medium').fontSize(18).text(`#${index + 1}: ${member.name}`, 60, doc.y + 20, {
+                  align: 'center',
+                  lineGap: 4 // Giảm khoảng cách dòng
+                });
+
 
                 // Hiển thị QR code thành viên
                 doc.image(member.qrCode, {  
@@ -161,9 +168,9 @@ app.post('/generate-pdf', async (req, res) => {
 
         // Thêm hình ảnh footer đã nén
         doc.image(compressedFooter, 0, pageHeight - 40, {
-          fit: [doc.page.width, 40], // Sử dụng `fit` để điều chỉnh tỷ lệ hình ảnh
-          align: 'center',
-          valign: 'center'
+          width: doc.page.width, // Đặt chiều rộng của footer bằng chiều rộng của trang
+          align: 'center', // Canh giữa nếu cần
+          valign: 'center' // Canh giữa nếu cần
       });
 
         doc.end(); // Kết thúc tạo file PDF
