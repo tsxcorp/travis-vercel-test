@@ -149,7 +149,7 @@ app.post('/generate-pdf', async (req, res) => {
                 doc.image(member.qrCode, {
                     width: 120,
                     height: 120,
-                    x: 390,
+                    x: (doc.page.width - 120) / 2,
                     y: doc.y - 10
                 });
 
