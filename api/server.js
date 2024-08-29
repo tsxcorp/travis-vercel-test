@@ -138,7 +138,9 @@ app.post('/generate-pdf', async (req, res) => {
                 }
 
                 // Vẽ khung hình cho mỗi thành viên
-                doc.rect(50, doc.y, 495, boxHeight).stroke();
+                doc.lineWidth(1);
+                doc.strokeColor('black', 0.6); // Màu đen với độ trong suốt 0.5
+                doc.rect(50, doc.y, 495, boxHeight).stroke(); 
 
                 // Hiển thị tên thành viên
                 doc.font('Poppins-Medium').fontSize(18).text(`#${index + 1}: ${member.name}`, 60, doc.y + 15);
