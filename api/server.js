@@ -143,14 +143,14 @@ app.post('/generate-pdf', async (req, res) => {
                 doc.rect(50, doc.y, 495, boxHeight).stroke(); 
 
                 // Hiển thị tên thành viên
-                doc.font('Poppins-Medium').fontSize(18).text(`#${index + 1}: ${member.name}`, 60, doc.y + 15);
+                doc.font('Poppins-Medium').fontSize(18).text(`#${index + 1}: ${member.name}`, 60, doc.y + 20);
 
                 // Hiển thị QR code thành viên
                 doc.image(member.qrCode, {
                     width: 120,
                     height: 120,
                     x: 390,
-                    y: doc.y
+                    y: doc.y - 10
                 });
 
                 doc.moveDown(boxHeight / 30); // Di chuyển xuống dưới để không chồng chéo lên thành viên tiếp theo
