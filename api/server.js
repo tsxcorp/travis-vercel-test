@@ -167,20 +167,21 @@ app.post('/generate-pdf', async (req, res) => {
         }
 
         // Thêm hình ảnh footer đã nén
-        const footerHeight = 40; // Chiều cao của footer
+          const footerHeight = 40; // Chiều cao mặc định cho footer
 
-        // Kiểm tra và đảm bảo đủ khoảng trống cho footer
-        if (doc.y + footerHeight > pageHeight) {
-            doc.addPage(); // Thêm trang mới nếu không đủ chỗ cho footer
-        }
+          // Kiểm tra và đảm bảo đủ khoảng trống cho footer
+          if (doc.y + footerHeight > doc.page.height) {
+              doc.addPage(); // Thêm trang mới nếu không đủ chỗ cho footer
+          }
 
-        // Vẽ footer
-        doc.image(compressedFooter, 0, doc.page.height - footerHeight, {
-            width: doc.page.width, // Đặt chiều rộng của footer bằng chiều rộng của trang
-            height: footerHeight,  // Đặt chiều cao của footer
-            align: 'center',       // Canh giữa nếu cần
-            valign: 'center'       // Canh giữa nếu cần
-        });
+          // Vẽ footer với tỷ lệ giữ nguyên
+          doc.image(compressedFooter, 0, doc.page.height - footerHeight, {
+              width: doc.page.width, // Chỉ đặt chiều rộng, tỷ lệ chiều cao tự điều chỉnh
+              fit: [doc.page.width, footerHeight], // Sử dụng fit để giữ tỷ lệ hình ảnh
+              align: 'center',       // Canh giữa nếu cần
+              valign: 'center'       // Canh giữa nếu cần
+          });
+
 
 
         doc.end(); // Kết thúc tạo file PDF
