@@ -18,7 +18,7 @@ app.get('/', (req, res) => {
 // Xử lý yêu cầu POST đến /generate-pdf
 app.post('/generate-pdf', async (req, res) => {
     try {
-        let { type, name, company, indEncryptKey, groupEncryptKey, memberEncryptKeys, headerUrl, footerUrl } = req.body;
+        let { type, name, company, indEncryptKey, groupEncryptKey, memberEncryptKeys, headerUrl, footerUrl, line } = req.body;
 
         // Thiết lập giá trị mặc định nếu tham số trống hoặc null
         type = type || 'ind';
@@ -29,6 +29,7 @@ app.post('/generate-pdf', async (req, res) => {
         memberEncryptKeys = memberEncryptKeys || [];  // Danh sách đối tượng có trường `name` và `encryptKey`
         headerUrl = headerUrl || 'https://via.placeholder.com/595x60';
         footerUrl = footerUrl || 'https://via.placeholder.com/595x40';
+        line = line || 'Default Line';  // Thiết lập giá trị mặc định cho line
 
         // Sử dụng thư viện qrcode để tạo QR code từ các encrypt key
         const qrCodeInd = await qrcode.toDataURL(indEncryptKey); // Tạo QR code cho cá nhân
@@ -93,6 +94,12 @@ app.post('/generate-pdf', async (req, res) => {
                 lineGap: 10,
             });
 
+            // Hiển thị thông tin Line bên dưới QR code
+            doc.font('Poppins-Medium').fontSize(20).text(`Line: ${line}`, {
+                align: 'center',
+                lineGap: 5
+            });
+           
             // Thêm hình ảnh QR code cá nhân từ Data URL
             doc.image(qrCodeInd, {
                 fit: [215, 215],
@@ -101,10 +108,17 @@ app.post('/generate-pdf', async (req, res) => {
                 x: (doc.page.width - 215) / 2,
                 y: doc.y
             });
+
         } else if (type === 'group') {
             // Layout cho nhóm
             doc.font('Poppins-Medium').fontSize(14).text("YOUR GROUP'S BADGES INFORMATION:", { align: 'center' });
             doc.moveDown(0.5);
+
+            // Hiển thị thông tin Line 
+            doc.font('Poppins-Medium').fontSize(20).text(`Line: ${line}`, {
+              align: 'center',
+              lineGap: 5
+          });
 
             // Thông tin công ty và danh sách các thành viên
             doc.font('Poppins-SemiBold').fontSize(24).text(company, { align: 'center' });
