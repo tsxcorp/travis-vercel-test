@@ -95,7 +95,7 @@ app.post('/generate-pdf', async (req, res) => {
             });
 
             // Hiển thị thông tin Line bên dưới QR code
-            doc.font('Poppins-Medium').fontSize(20).text(`Line: ${line}`, {
+            doc.font('Poppins-Medium').fontSize(18).text(`[Counter Line | Quầy số]: ${line}`, {
                 align: 'center',
                 lineGap: 5
             });
@@ -115,7 +115,7 @@ app.post('/generate-pdf', async (req, res) => {
             doc.moveDown(0.5);
 
             // Hiển thị thông tin Line 
-            doc.font('Poppins-Medium').fontSize(20).text(`Line: ${line}`, {
+            doc.font('Poppins-Medium').fontSize(18).text(`[Counter Line | Quầy số]: ${line}`, {
               align: 'center',
               lineGap: 5
           });
