@@ -50,10 +50,40 @@
         <div class="name">{{name}}</div>
         <div class="company">{{company}}</div>
         <img src="{{qrCodeUrl}}" alt="QR Code" class="qr-code"> <!-- Sử dụng trực tiếp URL QR code -->
-        <div class="option">{{option}}</div> <!-- Hiển thị option -->
+        <div class="option" id="optionText"></div> <!-- Hiển thị option -->
     </div>
 
     <script>
+        // Hàm để thiết lập option dựa trên tham số JSON hoặc văn bản
+        function setOption(optionData) {
+            const optionElement = document.getElementById('optionText');
+
+            // Nếu optionData là JSON, phân tích cú pháp
+            try {
+                optionData = JSON.parse(optionData.replace(/&quot;/g, '"'));
+            } catch (e) {
+                // Nếu không phải JSON, coi optionData là một đoạn văn bản
+                optionData = { text: optionData };
+            }
+
+            if (optionData.text) {
+                optionElement.textContent = optionData.text;
+            }
+            if (optionData.size) {
+                optionElement.style.fontSize = optionData.size + 'px';
+            }
+            if (optionData.style) {
+                optionElement.style.fontStyle = optionData.style;
+            }
+            if (optionData.weight) {
+                optionElement.style.fontWeight = optionData.weight;
+            }
+        }
+
+        // Lấy dữ liệu option từ placeholder
+        const optionPlaceholder = '{{option}}';
+        setOption(optionPlaceholder);
+
         // Hàm để in và đóng cửa sổ sau 3 giây
         function printAndClose() {
             window.print(); // Gọi lệnh in

@@ -206,10 +206,23 @@ app.post('/generate-pdf', async (req, res) => {
 
 // Xử lý yêu cầu GET đến /print-badge
 app.get('/print-badge', async (req, res) => {
-  const name = req.query.name || ' ';
-  const company = req.query.company || ' ';
-  const encryptKey = req.query.encryptKey || ' ';
-  const option = req.query.option || ' ';  // Thêm tham số option
+  const name = req.query.name || 'Tên Mặc Định';
+  const company = req.query.company || 'Công ty Mặc Định';
+  const encryptKey = req.query.encryptKey || 'Mặc Định';
+  let option = req.query.option || '{}';  // Sử dụng JSON cho option
+
+  // Kiểm tra xem option có phải là JSON hợp lệ hay không
+  try {
+      option = JSON.parse(option);
+  } catch (e) {
+      // Nếu không phải JSON hợp lệ, coi option như một đoạn văn bản đơn giản
+      option = {
+          text: option,
+          size: 20,  // Kích thước mặc định
+          style: 'normal',  // Kiểu chữ mặc định
+          weight: 'normal'  // Độ dày mặc định
+      };
+  }
 
   // Sử dụng thư viện qrcode để tạo QR code từ encryptKey
   try {
@@ -227,7 +240,7 @@ app.get('/print-badge', async (req, res) => {
           let htmlContent = data.replace('{{name}}', name)
                                 .replace('{{company}}', company)
                                 .replace('{{qrCodeUrl}}', qrCodeDataUrl)
-                                .replace('{{option}}', option); // Thêm option vào HTML
+                                .replace('{{option}}', JSON.stringify(option)); // Thêm option vào HTML dưới dạng chuỗi JSON
 
           res.send(htmlContent);
       });
@@ -236,6 +249,8 @@ app.get('/print-badge', async (req, res) => {
       res.status(500).send('Error generating QR Code');
   }
 });
+
+
 
 // Access 
 app.get('/nev-registration', );
