@@ -2,21 +2,12 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>RX Badge Printing</title>
+    <title>In Badge A5</title>
     <style>
-        @page {
-            size: A5; /* Thiết lập kích thước trang in thành A5 */
-            margin: 0; /* Loại bỏ lề */
-        }
-
-        body {
-            margin: 0;
-        }
         .badge {
             width: 106mm;  /* Kích thước chiều ngang của A5 */
             height: 135mm; /* Kích thước chiều dọc của A5 */
             padding: 0px;
-            margin-left: 20px;
             box-sizing: border-box;
             font-family: Arial, sans-serif;
             display: flex;
@@ -27,149 +18,84 @@
         }
 
         .name {
-            font-size: 30px; /* Làm lớn Tên hơn */
+            font-size: 38px; /* Làm lớn Tên hơn */
             font-weight: bold;
-            margin-bottom: 10px;
-            margin-top: 65px;
+            margin-bottom: 20px;
             text-transform: uppercase; /* Viết hoa toàn bộ */
         }
 
         .company {
-            font-size: 23px; /* Làm nhỏ tên công ty hơn */
-            margin-bottom: 10px;
+            font-size: 16px; /* Làm nhỏ tên công ty hơn */
+            margin-bottom: 30px;
             text-transform: uppercase; /* Viết hoa toàn bộ */
         }
 
         .qr-code {
-            width: 180px;
-            height: 180px;
+            width: 150px;
+            height: 150px;
         }
 
-        .option {
-            font-size: 14px; /* Cỡ chữ cho option */
-            text-transform: uppercase;
-            margin-top: 10px;
-            font-weight: bold;
+        .custom-text {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <div class="badge">
-        <div class="name">{{name}}</div>
-        <div class="company">{{company}}</div>
-        <img src="{{qrCodeUrl}}" alt="QR Code" class="qr-code"> <!-- Sử dụng trực tiếp URL QR code -->
-        <div class="option" id="optionText"></div> <!-- Hiển thị option -->
+        <div class="name" id="name"></div>
+        <div class="company" id="company"></div>
+        <img src="" alt="QR Code" class="qr-code" id="qrCode">
+        <div class="custom-text" id="customText"></div>
     </div>
 
     <script>
-        // Hàm để thiết lập option dựa trên tham số JSON hoặc văn bản
-        function setOption(optionData) {
-            const optionElement = document.getElementById('optionText');
+        // Hàm để truyền dữ liệu từ API vào HTML
+        function updateBadge(name, company, qrCodeUrl, option) {
+            document.getElementById('name').textContent = name;
+            document.getElementById('company').textContent = company;
+            document.getElementById('qrCode').src = qrCodeUrl;
 
-            // Nếu optionData là JSON, phân tích cú pháp
-            try {
-                optionData = JSON.parse(optionData.replace(/&quot;/g, '"'));
-            } catch (e) {
-                // Nếu không phải JSON, coi optionData là một đoạn văn bản
-                optionData = { text: optionData };
->>>>>>> parent of 057d3b0 (update)
-            }
+            // Xử lý customText để hiển thị văn bản tùy chỉnh, nếu không có thì dùng khoảng trắng
+            const customTextElement = document.getElementById('customText');
+            const defaultText = " "; // Mặc định là khoảng trắng
+            customTextElement.textContent = option.text || defaultText;
+            customTextElement.style.fontStyle = option.style || 'normal';
+            customTextElement.style.fontWeight = option.weight || 'normal';
+            customTextElement.style.fontSize = option.size ? `${option.size}px` : '14px';
+        }
 
-            body {
-                margin: 0;
-            }
-            .badge {
-                width: 106mm; /* Kích thước chiều ngang của A5 */
-                height: 125mm; /* Kích thước chiều dọc của A5 */
-                padding-top: 10px;
-                margin-left: 25px;
-                box-sizing: border-box;
-                font-family: Arial, sans-serif;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                text-align: center;
-            }
+        // Hàm để lấy query parameters từ URL
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            const qrCodeData = params.get('qrCodeUrl') || 'Mặc Định';
+            const qrCodeUrl = `https://port.rx-vietnamshows.com/qr-code?data=${qrCodeData}&size=215`;
 
-            .name {
-                font-size: 30px; /* Làm lớn Tên hơn */
-                font-weight: bold;
-                margin-bottom: 10px;
-                margin-top: 85px;
-                text-transform: uppercase; /* Viết hoa toàn bộ */
-            }
+            // Lấy và parse chuỗi JSON từ query param 'option', nếu không có thì tạo object rỗng
+            const optionString = params.get('option') || '{}';
+            const option = JSON.parse(optionString);
 
-            .company {
-                font-size: 23px; /* Làm nhỏ tên công ty hơn */
-                margin-bottom: 10px;
-                text-transform: uppercase; /* Viết hoa toàn bộ */
-            }
+            return {
+                name: params.get('name') || 'Tên Mặc Định',
+                company: params.get('company') || 'Công ty Mặc Định',
+                qrCodeUrl: qrCodeUrl,
+                option: option
+            };
+        }
 
-            .qr-code {
-                width: 180px;
-                height: 180px;
-            }
+        // Gọi hàm để lấy dữ liệu từ URL và cập nhật badge
+        const params = getQueryParams();
+        updateBadge(params.name, params.company, params.qrCodeUrl, params.option);
 
-            .option {
-                font-size: 14px; /* Cỡ chữ cho option */
-                text-transform: uppercase;
-                margin-top: 10px;
-                font-weight: bold;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="badge">
-            <div class="name">{{name}}</div>
-            <div class="company">{{company}}</div>
-            <img src="{{qrCodeUrl}}" alt="QR Code" class="qr-code" />
-            <!-- Sử dụng trực tiếp URL QR code -->
-            <div class="option" id="optionText"></div>
-            <!-- Hiển thị option -->
-        </div>
+        // Hàm để in và đóng cửa sổ sau 3 giây
+        function printAndClose() {
+            window.print(); // Gọi lệnh in
+            setTimeout(function() {
+                window.close(); // Đóng cửa sổ sau 3 giây
+            }, 3000);
+        }
 
-        <script>
-            // Hàm để thiết lập option dựa trên tham số JSON hoặc văn bản
-            function setOption(optionData) {
-                const optionElement = document.getElementById("optionText");
-
-                // Nếu optionData là JSON, phân tích cú pháp
-                try {
-                    optionData = JSON.parse(optionData.replace(/&quot;/g, '"'));
-                } catch (e) {
-                    // Nếu không phải JSON, coi optionData là một đoạn văn bản
-                    optionData = { text: optionData };
-                }
-
-                if (optionData.text) {
-                    optionElement.textContent = optionData.text;
-                }
-                if (optionData.size) {
-                    optionElement.style.fontSize = optionData.size + "px";
-                }
-                if (optionData.style) {
-                    optionElement.style.fontStyle = optionData.style;
-                }
-                if (optionData.weight) {
-                    optionElement.style.fontWeight = optionData.weight;
-                }
-            }
-
-            // Lấy dữ liệu option từ placeholder
-            const optionPlaceholder = "{{option}}";
-            setOption(optionPlaceholder);
-
-            // Hàm để in và đóng cửa sổ sau 3 giây
-            function printAndClose() {
-                window.print(); // Gọi lệnh in
-                setTimeout(function () {
-                    window.close(); // Đóng cửa sổ sau 3 giây
-                }, 3000);
-            }
-
-            // Gọi hàm printAndClose khi trang đã tải
-            window.onload = printAndClose;
-        </script>
-    </body>
+        // Gọi hàm printAndClose khi trang đã tải
+        window.onload = printAndClose;
+    </script>
+</body>
 </html>
