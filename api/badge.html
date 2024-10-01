@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+<<<<<<< HEAD
     <head>
         <meta charset="UTF-8" />
         <title>RX Badge Printing</title>
@@ -7,6 +8,80 @@
             @page {
                 size: A5; /* Thiết lập kích thước trang in thành A5 */
                 margin: 0; /* Loại bỏ lề */
+=======
+<head>
+    <meta charset="UTF-8">
+    <title>RX Badge Printing</title>
+    <style>
+        @page {
+            size: A5; /* Thiết lập kích thước trang in thành A5 */
+            margin: 0; /* Loại bỏ lề */
+        }
+
+        body {
+            margin: 0;
+        }
+        .badge {
+            width: 106mm;  /* Kích thước chiều ngang của A5 */
+            height: 135mm; /* Kích thước chiều dọc của A5 */
+            padding: 0px;
+            margin-left: 20px;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .name {
+            font-size: 30px; /* Làm lớn Tên hơn */
+            font-weight: bold;
+            margin-bottom: 10px;
+            margin-top: 65px;
+            text-transform: uppercase; /* Viết hoa toàn bộ */
+        }
+
+        .company {
+            font-size: 23px; /* Làm nhỏ tên công ty hơn */
+            margin-bottom: 10px;
+            text-transform: uppercase; /* Viết hoa toàn bộ */
+        }
+
+        .qr-code {
+            width: 180px;
+            height: 180px;
+        }
+
+        .option {
+            font-size: 14px; /* Cỡ chữ cho option */
+            text-transform: uppercase;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="badge">
+        <div class="name">{{name}}</div>
+        <div class="company">{{company}}</div>
+        <img src="{{qrCodeUrl}}" alt="QR Code" class="qr-code"> <!-- Sử dụng trực tiếp URL QR code -->
+        <div class="option" id="optionText"></div> <!-- Hiển thị option -->
+    </div>
+
+    <script>
+        // Hàm để thiết lập option dựa trên tham số JSON hoặc văn bản
+        function setOption(optionData) {
+            const optionElement = document.getElementById('optionText');
+
+            // Nếu optionData là JSON, phân tích cú pháp
+            try {
+                optionData = JSON.parse(optionData.replace(/&quot;/g, '"'));
+            } catch (e) {
+                // Nếu không phải JSON, coi optionData là một đoạn văn bản
+                optionData = { text: optionData };
+>>>>>>> parent of 057d3b0 (update)
             }
 
             body {
