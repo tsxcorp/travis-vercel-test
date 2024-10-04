@@ -13,52 +13,61 @@
             margin: 0;
         }
         .badge {
-            width: 106mm;  /* Kích thước chiều ngang của A5 */
-            height: 135mm; /* Kích thước chiều dọc của A5 */
-            padding: 0px;
-            margin-left: 20px;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
+        width: 106mm;
+        height: 76mm;
+        padding: 0px;
+        margin-left: 20px;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: row; /* Change to row to position elements horizontally */
+        justify-content: space-between; /* Space out the elements */
+        align-items: center;
+        text-align: left;
+    }
 
-        .name {
-            font-size: 30px; /* Làm lớn Tên hơn */
-            font-weight: bold;
-            margin-bottom: 10px;
-            margin-top: 75px;
-            text-transform: uppercase; /* Viết hoa toàn bộ */
-        }
+    .info {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding-left: 20px; /* Adjust padding if needed */
+    }
 
-        .company {
-            font-size: 23px; /* Làm nhỏ tên công ty hơn */
-            margin-bottom: 10px;
-            text-transform: uppercase; /* Viết hoa toàn bộ */
-        }
+    .name {
+        font-size: 30px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+    }
 
-        .qr-code {
-            width: 180px;
-            height: 180px;
-        }
+    .company {
+        font-size: 23px;
+        text-transform: uppercase;
+    }
 
-        .option {
-            font-size: 14px; /* Cỡ chữ cho option */
-            text-transform: uppercase;
-            margin-top: 10px;
-            font-weight: bold;
-        }
+    .qr-code {
+        width: 180px;
+        height: 180px;
+        margin-right: 20px; /* Add margin to separate from the edge */
+    }
+
+    .option {
+        font-size: 14px;
+        text-transform: uppercase;
+        margin-top: 10px;
+        font-weight: bold;
+    }
     </style>
 </head>
 <body>
     <div class="badge">
-        <div class="name">{{name}}</div>
-        <div class="company">{{company}}</div>
-        <img src="{{qrCodeUrl}}" alt="QR Code" class="qr-code"> <!-- Sử dụng trực tiếp URL QR code -->
-        <div class="option" id="optionText"></div> <!-- Hiển thị option -->
+        <div class="info">
+            <div class="name">{{name}}</div>
+            <div class="company">{{company}}</div>
+            <div class="option" id="optionText"></div>
+        </div>
+        <img src="{{qrCodeUrl}}" alt="QR Code" class="qr-code">
+        
     </div>
 
     <script>
