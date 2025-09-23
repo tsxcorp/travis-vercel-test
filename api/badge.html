@@ -99,29 +99,14 @@
 
         // Hàm để in và đóng cửa sổ sau 3 giây
         function printAndClose() {
-            if (window.printCalled) return; // Tránh gọi nhiều lần
-            window.printCalled = true;
-            
-            console.log('Attempting to print...');
             window.print(); // Gọi lệnh in
             setTimeout(function() {
                 window.close(); // Đóng cửa sổ sau 3 giây
             }, 3000);
         }
 
-        // Khởi chạy print sau khi trang load xong
-        window.addEventListener('load', function() {
-            // Đợi thêm 500ms để đảm bảo mọi thứ đã sẵn sàng
-            setTimeout(printAndClose, 500);
-        });
-
-        // Backup: nếu sau 2 giây vẫn chưa print thì force print
-        setTimeout(function() {
-            if (!window.printCalled) {
-                console.log('Force printing...');
-                printAndClose();
-            }
-        }, 2000);
+        // Gọi hàm printAndClose khi trang đã tải
+        window.onload = printAndClose;
     </script>
 </body>
 </html>
