@@ -105,8 +105,26 @@
             }, 3000);
         }
 
-        // Gọi hàm printAndClose khi trang đã tải
-        window.onload = printAndClose;
+        // Đảm bảo print dialog xuất hiện trong mọi trường hợp
+        function ensurePrint() {
+            // Đợi một chút để DOM hoàn toàn ready
+            setTimeout(printAndClose, 100);
+        }
+
+        // Gọi hàm in với nhiều event listeners để đảm bảo
+        document.addEventListener('DOMContentLoaded', ensurePrint);
+        window.addEventListener('load', ensurePrint);
+        
+        // Backup: nếu trang đã load rồi thì gọi ngay
+        if (document.readyState === 'complete') {
+            ensurePrint();
+        } else if (document.readyState === 'loading') {
+            // Nếu đang loading, chờ DOMContentLoaded
+            document.addEventListener('DOMContentLoaded', ensurePrint);
+        } else {
+            // Nếu interactive, gọi ngay
+            ensurePrint();
+        }
     </script>
 </body>
 </html>
