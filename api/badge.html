@@ -99,32 +99,29 @@
 
         // Hàm để in và đóng cửa sổ sau 3 giây
         function printAndClose() {
+            if (window.printCalled) return; // Tránh gọi nhiều lần
+            window.printCalled = true;
+            
+            console.log('Attempting to print...');
             window.print(); // Gọi lệnh in
             setTimeout(function() {
                 window.close(); // Đóng cửa sổ sau 3 giây
             }, 3000);
         }
 
-        // Đảm bảo print dialog xuất hiện trong mọi trường hợp
-        function ensurePrint() {
-            // Đợi một chút để DOM hoàn toàn ready
-            setTimeout(printAndClose, 100);
-        }
+        // Khởi chạy print sau khi trang load xong
+        window.addEventListener('load', function() {
+            // Đợi thêm 500ms để đảm bảo mọi thứ đã sẵn sàng
+            setTimeout(printAndClose, 500);
+        });
 
-        // Gọi hàm in với nhiều event listeners để đảm bảo
-        document.addEventListener('DOMContentLoaded', ensurePrint);
-        window.addEventListener('load', ensurePrint);
-        
-        // Backup: nếu trang đã load rồi thì gọi ngay
-        if (document.readyState === 'complete') {
-            ensurePrint();
-        } else if (document.readyState === 'loading') {
-            // Nếu đang loading, chờ DOMContentLoaded
-            document.addEventListener('DOMContentLoaded', ensurePrint);
-        } else {
-            // Nếu interactive, gọi ngay
-            ensurePrint();
-        }
+        // Backup: nếu sau 2 giây vẫn chưa print thì force print
+        setTimeout(function() {
+            if (!window.printCalled) {
+                console.log('Force printing...');
+                printAndClose();
+            }
+        }, 2000);
     </script>
 </body>
 </html>
