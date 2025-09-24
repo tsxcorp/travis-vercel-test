@@ -257,7 +257,7 @@ app.post("/generate-pdf", async (req, res) => {
 // Xử lý yêu cầu GET đến /print-badge
 app.get("/print-badge", async (req, res) => {
     const name = req.query.name || "Tên Mặc Định";
-    const company = req.query.company || "Công ty Mặc Định";
+    const company = req.query.company || "";
     const encryptKey = req.query.encryptKey || "Mặc Định";
     let option = req.query.option || "{}"; // Sử dụng JSON cho option
 
